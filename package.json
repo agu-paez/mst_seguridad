@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:all": "concurrently \"npm run start\" \"npm run dev\"",
-    "build": "cd backend && npm install",
+    "build":"cd backend && npm install cors express mysql2 sequelize",
     "start": "node backend/backend.js",
     "lint": "eslint .",
     "preview": "vite preview"

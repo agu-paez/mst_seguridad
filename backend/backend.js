@@ -458,6 +458,7 @@ app.delete('/api/presupuestos/:id', verificarToken, async (req, res) => {
 });
 
 // Fallback SPA
+// Fallback SPA
 app.use((req, res) => {
   if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
     res.sendFile('dist/index.html', { root: '.' });

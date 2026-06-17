@@ -1,10 +1,14 @@
 import { Sequelize, DataTypes } from 'sequelize';
 
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: './database.sqlite',
+import { Sequelize, DataTypes } from 'sequelize';
+
+const sequelize = new Sequelize('u591520106_bdsistema', 'u591520106_joel_benitez', 'Benitez_Tiziano_16/26', {
+    host: 'localhost',
+    dialect: 'mysql',
     logging: false
 });
+
+// (Y aquí abajo dejas todos tus modelos: Producto, Factura, etc., tal como estaban)
 
 const Producto = sequelize.define('Producto', {
     nombre: { type: DataTypes.STRING, allowNull: false },

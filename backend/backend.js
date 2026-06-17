@@ -20,7 +20,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 app.use(helmet());
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
-app.use('/uploads', express.static('public/uploads'));
+app.use('/uploads', express.static('backend/public/uploads'));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('dist'));

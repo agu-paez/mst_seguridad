@@ -12,6 +12,7 @@ import { Op } from 'sequelize';
 import { sequelize, Producto, Factura, DetalleFactura, Usuario, Cliente, Trabajo, Presupuesto } from './db.js';
 //---------------------CONFIGURACIONES INICIALES---------------------
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'mst_alarm_dev_secret_2024';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';

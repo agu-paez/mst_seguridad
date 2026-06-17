@@ -27,6 +27,7 @@
     "react-hook-form": "^7.79.0",
     "react-router-dom": "^7.17.0",
     "recharts": "^3.8.1",
+    "mysql2": "^3.9.0",
     "sequelize": "^6.37.8"
   },
   "devDependencies": {

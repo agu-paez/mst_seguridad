@@ -471,7 +471,7 @@ sequelize.sync().then(async () => {
     try { await sequelize.query("ALTER TABLE Trabajos ADD COLUMN usuarioId INTEGER REFERENCES usuarios(id)"); } catch {}
     try { await sequelize.query("ALTER TABLE Presupuestos ADD COLUMN metodoPago VARCHAR(255) DEFAULT 'efectivo'"); } catch {}
     try { await sequelize.query("ALTER TABLE Presupuestos ADD COLUMN subtotal FLOAT"); } catch {}
-    console.log('📦 Base de datos SQLite conectada con Sequelize.');
+    console.log('📦 Base de datos MySQL conectada con Sequelize exitosamente.');
 
     const usuarioCount = await Usuario.count();
     if (usuarioCount === 0) {
@@ -480,7 +480,12 @@ sequelize.sync().then(async () => {
         console.log('📌 Usuario admin creado (JOEL_BENITEZ / agus123). Cambiá la contraseña al iniciar sesión.');
     }
 
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`🚀 Servidor backend corriendo en http://0.0.0.0:${PORT}`);
+    // Le quitamos el '0.0.0.0' para que Hostinger no se confunda
+    app.listen(PORT, () => {
+        console.log(`🚀 Servidor backend corriendo perfectamente en el puerto ${PORT}`);
     });
+}).catch(error => {
+    // ESTO ES CLAVE: Si la base de datos falla, ahora nos va a gritar el error exacto en rojo
+    console.error("🚨 ERROR FATAL AL ARRANCAR: No se pudo conectar a la base de datos.");
+    console.error(error);
 });

@@ -2154,3 +2154,69 @@ body {
   .prod-item img { width: 34px; height: 34px; }
   .prod-item span { font-size: 10px; }
 }
+
+/* Footer */
+.footer {
+  margin-top: 40px;
+  padding: 24px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.footer-logo {
+  height: 28px;
+  width: auto;
+  border-radius: 6px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.footer-copy {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 11px;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    margin-top: 20px;
+    padding: 16px 12px;
+  }
+  .footer-brand { font-size: 12px; }
+  .footer-logo { height: 22px; }
+  .footer-links { gap: 10px; }
+  .footer-links a { font-size: 11px; }
+  .footer-copy { font-size: 10px; }
+}

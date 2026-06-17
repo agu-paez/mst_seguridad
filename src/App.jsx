@@ -59,6 +59,23 @@ function App() {
             {cargo === 'administrador' && <Route path="usuarios" element={<PanelUsuarios />} />}
           </Route>
         </Routes>
+
+        <footer className="footer">
+          <div className="footer-content">
+            <div className="footer-brand">
+              <img src="/uploads/1781569405191-1781114119055-logo.jpeg" alt="MST" className="footer-logo" />
+              <strong>MST Alarmas & Seguridad</strong>
+            </div>
+            <div className="footer-links">
+              <a href="#">Términos y Condiciones</a>
+              <a href="#">Política de Privacidad</a>
+              <a href="#">Aviso Legal</a>
+            </div>
+            <div className="footer-copy">
+              &copy; {new Date().getFullYear()} MST Alarmas & Seguridad. Todos los derechos reservados.
+            </div>
+          </div>
+        </footer>
       </Router>
     </div>
   );

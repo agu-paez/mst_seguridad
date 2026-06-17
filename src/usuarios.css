@@ -1,0 +1,139 @@
+.panel-usuarios {
+  max-width: 600px;
+}
+
+.usuarios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.usuarios-header h1 { margin: 0; }
+
+.btn-agregar-usuario {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-agregar-usuario:hover {
+  transform: translateY(-2px);
+}
+
+.form-usuario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 20px;
+}
+
+.form-usuario input,
+.form-usuario select {
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  outline: none;
+  font-family: inherit;
+}
+
+.form-usuario input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.form-usuario input:focus,
+.form-usuario select:focus {
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.form-usuario select option {
+  color: #000;
+}
+
+.form-error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin: 0;
+}
+
+.usuarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.usuario-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.usuario-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.usuario-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.usuario-info strong {
+  color: #fff;
+  font-size: 14px;
+}
+
+.usuario-cargo {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cargo-administrador {
+  background: rgba(102, 126, 234, 0.15);
+  color: #667eea;
+}
+
+.cargo-empleado {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.usuario-item .btn-eliminar {
+  padding: 6px 12px;
+  font-size: 13px;
+  min-height: auto;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .panel-usuarios { max-width: 100%; }
+  .usuarios-header { flex-direction: column; gap: 10px; align-items: stretch; }
+  
+  /* ESTA ES LA LÍNEA QUE CAMBIAMOS */
+  .usuario-item { flex-direction: row; gap: 8px; align-items: center; justify-content: space-between; }
+  
+  .usuario-info { flex-wrap: wrap; }
+}

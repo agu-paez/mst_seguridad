@@ -25,7 +25,7 @@ try {
 const DB_NAME = process.env.DB_NAME || 'u591520106_bdsistema';
 const DB_USER = process.env.DB_USER || 'u591520106_joel_benitez';
 const DB_PASS = process.env.DB_PASS || '';
-const DB_HOST = process.env.DB_HOST || '127.0.0.1';
+const DB_HOST = process.env.DB_HOST || 'localhost';
 
 if (!DB_PASS) {
     console.error('ERROR: DB_PASS no está definido. Creá un archivo .env en la raíz del proyecto o configurá la variable de entorno DB_PASS.');

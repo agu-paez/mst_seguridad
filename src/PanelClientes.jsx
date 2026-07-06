@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import { getApiUrl, getImageUrl } from './config';
 
 const FALLBACK_IMG_SMALL = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect fill="#2a2a3d" width="40" height="40"/><text fill="#555" font-family="sans-serif" font-size="12" text-anchor="middle" x="20" y="25">?</text></svg>');
 
 const API = async (path, opts = {}) => {
   const token = localStorage.getItem('token');
-  const r = await fetch(path, {
+  const r = await fetch(getApiUrl(path), {
     ...opts,
     headers: { ...opts.headers, Authorization: `Bearer ${token}` }
   });
@@ -101,7 +102,7 @@ function PanelClientes() {
     }
     try {
       const token = localStorage.getItem('token');
-      const r = await fetch('/api/trabajos', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const r = await fetch(getApiUrl('/api/trabajos'), { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
       if (!r.ok) { const e = await r.json(); alert('Error: ' + (e.error || 'desconocido')); return; }
       setFormTrabajo({ descripcion: '', labor: '', usuarioId: '' });
       setProdsSel([]);
@@ -180,7 +181,7 @@ function PanelClientes() {
                   <div className="prod-grid">
                     {productos.map(p => (
                       <div key={p.id} className="prod-item" onClick={() => agregarProd(p)}>
-                        <img src={p.imagen || FALLBACK_IMG_SMALL} alt={p.nombre} onError={(e) => { if (e.target.src !== FALLBACK_IMG_SMALL) e.target.src = FALLBACK_IMG_SMALL; }} />
+                        <img src={getImageUrl(p.imagen) || FALLBACK_IMG_SMALL} alt={p.nombre} onError={(e) => { if (e.target.src !== FALLBACK_IMG_SMALL) e.target.src = FALLBACK_IMG_SMALL; }} />
                         <span>{p.nombre}</span>
                         <small>${p.precio?.toLocaleString()}</small>
                       </div>

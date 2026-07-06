@@ -1,13 +1,14 @@
 import { useForm } from 'react-hook-form';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from './config';
 
 function Login({ onLogin }) {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
   const alEnviar = async (datos) => {
     try {
-      const respuesta = await axios.post('/api/login', datos)
+      const respuesta = await axios.post(getApiUrl('/api/login'), datos)
       const { cargo, token } = respuesta.data
       localStorage.setItem('token', token)
       localStorage.setItem('cargo', cargo)

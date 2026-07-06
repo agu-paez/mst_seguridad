@@ -10,11 +10,33 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Op } from 'sequelize';
 import { sequelize, Producto, Factura, DetalleFactura, Usuario, Cliente, Trabajo, Presupuesto } from './db.js';
+import crypto from 'crypto';
+
+// Cargar variables de entorno desde .env manualmente (sin dotenv)
+try {
+    const envPath = path.resolve(new URL('.', import.meta.url).pathname, '..', '.env');
+    if (fs.existsSync(envPath)) {
+        const envContent = fs.readFileSync(envPath, 'utf-8');
+        for (const line of envContent.split('\n')) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) continue;
+            const eqIdx = trimmed.indexOf('=');
+            if (eqIdx === -1) continue;
+            const key = trimmed.slice(0, eqIdx).trim();
+            const value = trimmed.slice(eqIdx + 1).trim();
+            if (!process.env[key]) process.env[key] = value;
+        }
+    }
+} catch {}
+
 //---------------------CONFIGURACIONES INICIALES---------------------
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'mst_alarm_dev_secret_2024';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+if (!process.env.JWT_SECRET) {
+    console.warn('⚠️  JWT_SECRET no definido. Se usará uno generado (las sesiones se invalidarán al reiniciar). Configurá JWT_SECRET en producción.');
+}
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
 app.use(helmet());
 app.use(cors({ origin: CORS_ORIGIN }));
@@ -29,8 +51,14 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: { error: "Demasiados intentos de login. Intentá de nuevo en 15 minutos." }
+});
+
 //definimos lo que envia el front del  usuario
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', loginLimiter, async (req, res) => {
     try{
         const { usuario, password } = req.body;
         const usuarioBuscado = await Usuario.findOne({ where: { nombre: usuario } });
@@ -55,12 +83,25 @@ app.post('/api/login', async (req, res) => {
 });
 
 
+//---------------------MIDDLEWARE DE AUTENTICACION---------------------
+const verificarToken = (req, res, next) => {
+    const auth = req.headers.authorization;
+    if (!auth) return res.status(401).json({ error: "Token requerido" });
+    try {
+        const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+        req.usuario = decoded;
+        next();
+    } catch {
+        res.status(401).json({ error: "Token inválido" });
+    }
+};
+
 //---------------------PRODUCTOS---------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, 'public', 'uploads');
 fs.mkdirSync(uploadDir, { recursive: true });
-app.use('/uploads', express.static(uploadDir));
+app.use('/api/uploads', express.static(uploadDir));
 
 // Configuración de Multer para las subidas de archivos
 const storage = multer.diskStorage({
@@ -96,7 +137,7 @@ app.get('/api/productos', async (req, res) => {
     }
 });
 //Editar producto
-app.put('/api/productos/:id', upload.single('imagen'), async (req, res) => {
+app.put('/api/productos/:id', verificarToken, upload.single('imagen'), async (req, res) => {
     try {
         const { id } = req.params;
         const producto = await Producto.findByPk(id);
@@ -117,12 +158,12 @@ app.put('/api/productos/:id', upload.single('imagen'), async (req, res) => {
         res.json(producto);
     } catch (error) {
         console.error("❌ Error al editar producto:", error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
 //Eliminar producto
-app.delete('/api/productos/:id', async (req, res) => {
+app.delete('/api/productos/:id', verificarToken, async (req, res) => {
     try {
         const { id } = req.params;
         const producto = await Producto.findByPk(id);
@@ -133,15 +174,13 @@ app.delete('/api/productos/:id', async (req, res) => {
         res.json({ mensaje: "Producto eliminado" });
     } catch (error) {
         console.error("❌ Error al eliminar producto:", error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
 // RUTA 1.5: Agregar nuevo producto
-app.post('/api/productos', upload.single('imagen'), async (req, res) => {
+app.post('/api/productos', verificarToken, upload.single('imagen'), async (req, res) => {
     try {
-        console.log("📝 POST /api/productos recibido con datos:", req.body);
-        console.log("📝 Archivo recibido:", req.file);
         const { nombre, precio, descripcion, imagenUrl } = req.body || {};
         const imagen = req.file ? `/uploads/${req.file.filename}` : (imagenUrl || null);
         
@@ -164,16 +203,15 @@ app.post('/api/productos', upload.single('imagen'), async (req, res) => {
             imagen: imagen
         });
 
-        console.log("✅ Producto creado:", nuevoProducto.toJSON());
         res.status(201).json(nuevoProducto);
     } catch (error) {
         console.error("❌ Error al agregar producto:", error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
 // RUTA 2: Recibir el carrito y guardarlo en la Base de Datos
-app.post('/api/facturas', async (req, res) => {
+app.post('/api/facturas', verificarToken, async (req, res) => {
     const t = await sequelize.transaction();
     try {
         const { total, items } = req.body;
@@ -195,23 +233,11 @@ app.post('/api/facturas', async (req, res) => {
         res.status(201).json({ mensaje: "Guardado", facturaId: nuevaFactura.id });
     } catch (error) {
         await t.rollback();
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
 //---------------------PANEL ADMIN / DASHBOARD---------------------
-const verificarToken = (req, res, next) => {
-    const auth = req.headers.authorization;
-    if (!auth) return res.status(401).json({ error: "Token requerido" });
-    try {
-        const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET);
-        req.usuario = decoded;
-        next();
-    } catch {
-        res.status(401).json({ error: "Token inválido" });
-    }
-};
-
 // Dashboard stats
 app.get('/api/dashboard/stats', verificarToken, async (req, res) => {
     try {
@@ -277,7 +303,7 @@ app.get('/api/dashboard/stats', verificarToken, async (req, res) => {
 
         res.json({ clientes, clientesNuevos, trabajos, ingresosTrabajos, ventasPorProducto, productosMasVendidos, productoMasUsado, empleadoMasActivo, productosUsadosTrabajos, trabajosPorEmpleado });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -287,7 +313,7 @@ app.get('/api/clientes', verificarToken, async (req, res) => {
         const clientes = await Cliente.findAll({ order: [['id', 'DESC']] });
         res.json(clientes);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -298,7 +324,7 @@ app.post('/api/clientes', verificarToken, async (req, res) => {
         const cliente = await Cliente.create({ nombre, telefono, email, direccion });
         res.status(201).json(cliente);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -311,7 +337,7 @@ app.get('/api/clientes/:id', verificarToken, async (req, res) => {
         if (cliente.Trabajos) cliente.Trabajos.sort((a, b) => b.id - a.id);
         res.json(cliente);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -322,7 +348,7 @@ app.put('/api/clientes/:id', verificarToken, async (req, res) => {
         await cliente.update(req.body);
         res.json(cliente);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -333,7 +359,7 @@ app.delete('/api/clientes/:id', verificarToken, async (req, res) => {
         await cliente.destroy();
         res.json({ mensaje: "Cliente eliminado" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -343,7 +369,7 @@ app.get('/api/usuarios', verificarToken, async (req, res) => {
         const usuarios = await Usuario.findAll({ attributes: ['id', 'nombre', 'cargo'] });
         res.json(usuarios);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -365,7 +391,7 @@ app.post('/api/usuarios', verificarToken, async (req, res) => {
         const usuario = await Usuario.create({ nombre, password: hash, cargo: cargoValido });
         res.status(201).json({ id: usuario.id, nombre: usuario.nombre, cargo: usuario.cargo });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -379,7 +405,7 @@ app.delete('/api/usuarios/:id', verificarToken, async (req, res) => {
         await usuario.destroy();
         res.json({ mensaje: 'Usuario eliminado' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -402,7 +428,7 @@ app.post('/api/trabajos', verificarToken, upload.array('imagenes', 5), async (re
         });
         res.status(201).json(trabajo);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -413,7 +439,7 @@ app.delete('/api/trabajos/:id', verificarToken, async (req, res) => {
         await trabajo.destroy();
         res.json({ mensaje: "Trabajo eliminado" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -423,7 +449,7 @@ app.get('/api/presupuestos', verificarToken, async (req, res) => {
         const presupuestos = await Presupuesto.findAll({ order: [['id', 'DESC']] });
         res.json(presupuestos);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -442,7 +468,7 @@ app.post('/api/presupuestos', verificarToken, async (req, res) => {
         });
         res.status(201).json(presupuesto);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -453,7 +479,7 @@ app.delete('/api/presupuestos/:id', verificarToken, async (req, res) => {
         await presupuesto.destroy();
         res.json({ mensaje: "Presupuesto eliminado" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
@@ -471,16 +497,22 @@ sequelize.sync().then(async () => {
     try { await sequelize.query("ALTER TABLE Trabajos ADD COLUMN usuarioId INTEGER REFERENCES usuarios(id)"); } catch {}
     try { await sequelize.query("ALTER TABLE Presupuestos ADD COLUMN metodoPago VARCHAR(255) DEFAULT 'efectivo'"); } catch {}
     try { await sequelize.query("ALTER TABLE Presupuestos ADD COLUMN subtotal FLOAT"); } catch {}
-    console.log('📦 Base de datos SQLite conectada con Sequelize.');
-
     const usuarioCount = await Usuario.count();
     if (usuarioCount === 0) {
-        const hash = await bcrypt.hash('agus123', 10);
-        await Usuario.create({ nombre: 'JOEL_BENITEZ', password: hash, cargo: 'administrador' });
-        console.log('📌 Usuario admin creado (JOEL_BENITEZ / agus123). Cambiá la contraseña al iniciar sesión.');
+        const adminUser = process.env.ADMIN_USER || 'admin';
+        const adminPass = process.env.ADMIN_PASSWORD;
+        if (!adminPass) {
+            console.warn('ADMIN_PASSWORD no definido. No se creará usuario admin automáticamente. Iniciá la app con ADMIN_PASSWORD para crear el admin inicial.');
+        } else {
+            const hash = await bcrypt.hash(adminPass, 10);
+            await Usuario.create({ nombre: adminUser, password: hash, cargo: 'administrador', email: process.env.ADMIN_EMAIL || 'admin@mstalarmas.com.ar' });
+            console.log(`Usuario admin "${adminUser}" creado correctamente.`);
+        }
     }
 
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`🚀 Servidor backend corriendo en http://0.0.0.0:${PORT}`);
+    const HOST = process.env.HOST || '0.0.0.0';
+    app.listen(PORT, HOST, () => {
+        console.log(`🚀 Servidor corriendo en http://${HOST}:${PORT}`);
+        if (!process.env.JWT_SECRET) console.warn('⚠️  Configurá JWT_SECRET como variable de entorno en producción');
     });
 });

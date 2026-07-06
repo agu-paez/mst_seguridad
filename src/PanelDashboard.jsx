@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import './dashboard.css';
+import { getApiUrl } from './config';
 
 const API = async (path, opts = {}) => {
   const token = localStorage.getItem('token');
-  const r = await fetch(path, {
+  const r = await fetch(getApiUrl(path), {
     ...opts,
     headers: { ...opts.headers, Authorization: `Bearer ${token}` }
   });

@@ -35,3 +35,10 @@ backend/public/uploads/*
 
 # OS
 Thumbs.db
+
+# SSH keys
+paezagustin
+paezagustin.pub
+
+# Backups
+backend/backend.zip

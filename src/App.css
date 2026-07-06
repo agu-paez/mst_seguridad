@@ -1642,22 +1642,6 @@ body {
   margin-top: 4px;
 }
 
-.pf-ajuste {
-  text-align: right;
-  font-size: 14px;
-  padding: 4px 0;
-}
-
-.pf-descuento {
-  color: #2ecc71;
-  font-weight: 600;
-}
-
-.pf-recargo {
-  color: #e67e22;
-  font-weight: 600;
-}
-
 .pf-metodo-pago {
   display: flex;
   gap: 8px;
@@ -2056,7 +2040,6 @@ body {
   .pf-item small { font-size: 10px; }
   .pf-total { font-size: 14px; }
   .pf-total-final { font-size: 16px; }
-  .pf-ajuste { font-size: 12px; }
   .pf-metodo-pago { flex-direction: row; gap: 4px; }
   .pf-metodo-btn { font-size: 11px; padding: 6px 4px; }
 

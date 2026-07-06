@@ -1,15 +1,26 @@
 import { useState, useEffect } from 'react';
+import { getApiUrl, getImageUrl } from './config';
 
 const FALLBACK_IMG = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="360" height="240"><rect fill="#2a2a3d" width="360" height="240"/><text fill="#555" font-family="sans-serif" font-size="16" text-anchor="middle" x="180" y="120">Sin imagen</text></svg>');
 
 const API = async (path, opts = {}) => {
   const token = localStorage.getItem('token');
-  const r = await fetch(path, {
+  const r = await fetch(getApiUrl(path), {
     ...opts,
+    cache: 'no-store',
     headers: { ...opts.headers, Authorization: `Bearer ${token}` }
   });
-  if (!r.ok) { const e = await r.json(); throw new Error(e.error || 'Error'); }
-  return r.json();
+  
+  const text = await r.text();
+  
+  try {
+    const data = JSON.parse(text);
+    if (!r.ok) throw new Error(data.error || 'Error del servidor');
+    return data;
+  } catch (e) {
+    console.error("🚨 EL SERVIDOR DEVOLVIÓ ESTO EN LUGAR DE DATOS:", text);
+    throw new Error('Error al leer los datos de la base de datos.');
+  }
 };
 
 function PanelProductos() {
@@ -19,7 +30,9 @@ function PanelProductos() {
   const [editandoId, setEditandoId] = useState(null);
 
   useEffect(() => {
-    API('/api/productos').then(setProductos);
+    API('/api/productos')
+      .then(setProductos)
+      .catch(err => console.error("Error al cargar productos:", err.message));
   }, []);
 
   const crearProducto = async (e) => {
@@ -37,7 +50,7 @@ function PanelProductos() {
       if (formProducto.imagenUrl) formData.append('imagenUrl', formProducto.imagenUrl);
 
       const token = localStorage.getItem('token');
-      const r = await fetch('/api/productos', {
+      const r = await fetch(getApiUrl('/api/productos'), {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData
@@ -67,7 +80,7 @@ function PanelProductos() {
       if (formProducto.imagenUrl) formData.append('imagenUrl', formProducto.imagenUrl);
 
       const token = localStorage.getItem('token');
-      const r = await fetch(`/api/productos/${editandoId}`, {
+      const r = await fetch(getApiUrl(`/api/productos/${editandoId}`), {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
         body: formData
@@ -154,7 +167,7 @@ function PanelProductos() {
       <div className="productos-grid">
         {productos.map(p => (
           <div key={p.id} className="producto-tarjeta">
-            <img src={p.imagen || FALLBACK_IMG} alt={p.nombre} className="producto-imagen" onError={(e) => { if (e.target.src !== FALLBACK_IMG) e.target.src = FALLBACK_IMG; }} />
+            <img src={getImageUrl(p.imagen) || FALLBACK_IMG} alt={p.nombre} className="producto-imagen" onError={(e) => { if (e.target.src !== FALLBACK_IMG) e.target.src = FALLBACK_IMG; }} />
             <div className="producto-detalle">
               <h3>{p.nombre}</h3>
               <div className="producto-meta">

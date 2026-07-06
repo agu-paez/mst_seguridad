@@ -54,7 +54,7 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<PanelDashboard />} />
             <Route path="clientes" element={<PanelClientes />} />
-            {cargo === 'administrador' && <Route path="productos" element={<PanelProductos />} />}
+            {cargo === 'administrador' && <Route path="/panel/productos" element={<PanelProductos />} />}
             <Route path="presupuestos" element={<PanelPresupuestos />} />
             {cargo === 'administrador' && <Route path="usuarios" element={<PanelUsuarios />} />}
           </Route>

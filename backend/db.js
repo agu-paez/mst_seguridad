@@ -54,7 +54,7 @@ const Producto = sequelize.define('Producto', {
 const Usuario = sequelize.define('usuario',{
     nombre: { type: DataTypes.STRING, allowNull: false},
     password: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, allowNull: false, unique: true },
+    email: { type: DataTypes.STRING, allowNull: true },
     cargo: { type: DataTypes.STRING, allowNull: false }
 })
 

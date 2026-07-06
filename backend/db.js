@@ -1,9 +1,19 @@
 import { Sequelize, DataTypes } from 'sequelize';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-// Conexión local a un archivo SQLite
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dbPath = path.resolve(__dirname, '..', 'database.sqlite');
+
+if (!fs.existsSync(dbPath)) {
+    fs.writeFileSync(dbPath, '');
+}
+
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: './database.sqlite',
+    storage: dbPath,
     logging: false
 });
 

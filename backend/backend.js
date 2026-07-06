@@ -43,7 +43,7 @@ app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static('dist'));
+app.use(express.static(path.resolve(__dirname, '..', 'dist')));
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -101,6 +101,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, 'public', 'uploads');
 fs.mkdirSync(uploadDir, { recursive: true });
+app.use('/uploads', express.static(uploadDir));
 app.use('/api/uploads', express.static(uploadDir));
 
 // Configuración de Multer para las subidas de archivos
@@ -486,7 +487,7 @@ app.delete('/api/presupuestos/:id', verificarToken, async (req, res) => {
 // Fallback SPA
 app.use((req, res) => {
   if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
-    res.sendFile('dist/index.html', { root: '.' });
+    res.sendFile(path.resolve(__dirname, '..', 'dist', 'index.html'));
   } else {
     res.status(404).json({ error: 'Ruta no encontrada' });
   }

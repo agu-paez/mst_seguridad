@@ -15,23 +15,6 @@ import crypto from 'crypto';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cargar variables de entorno desde .env manualmente (sin dotenv)
-try {
-    const envPath = path.resolve(__dirname, '..', '.env');
-    if (fs.existsSync(envPath)) {
-        const envContent = fs.readFileSync(envPath, 'utf-8');
-        for (const line of envContent.split('\n')) {
-            const trimmed = line.trim();
-            if (!trimmed || trimmed.startsWith('#')) continue;
-            const eqIdx = trimmed.indexOf('=');
-            if (eqIdx === -1) continue;
-            const key = trimmed.slice(0, eqIdx).trim();
-            const value = trimmed.slice(eqIdx + 1).trim();
-            if (!process.env[key]) process.env[key] = value;
-        }
-    }
-} catch {}
-
 //---------------------CONFIGURACIONES INICIALES---------------------
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -1,4 +1,26 @@
 import { Sequelize, DataTypes } from 'sequelize';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+try {
+    const envPath = path.resolve(__dirname, '..', '.env');
+    if (fs.existsSync(envPath)) {
+        const envContent = fs.readFileSync(envPath, 'utf-8');
+        for (const line of envContent.split('\n')) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) continue;
+            const eqIdx = trimmed.indexOf('=');
+            if (eqIdx === -1) continue;
+            const key = trimmed.slice(0, eqIdx).trim();
+            const value = trimmed.slice(eqIdx + 1).trim();
+            if (!process.env[key]) process.env[key] = value;
+        }
+    }
+} catch {}
 
 const DB_NAME = process.env.DB_NAME || 'u591520106_bdsistema';
 const DB_USER = process.env.DB_USER || 'u591520106_joel_benitez';
@@ -6,7 +28,7 @@ const DB_PASS = process.env.DB_PASS || '';
 const DB_HOST = process.env.DB_HOST || '127.0.0.1';
 
 if (!DB_PASS) {
-    console.error('ERROR: DB_PASS no está definido. Configurá la contraseña de MySQL en variables de entorno.');
+    console.error('ERROR: DB_PASS no está definido. Creá un archivo .env en la raíz del proyecto o configurá la variable de entorno DB_PASS.');
     process.exit(1);
 }
 

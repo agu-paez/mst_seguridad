@@ -29,6 +29,7 @@ app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.set('trust proxy', 1);
 app.use(express.static(path.resolve(__dirname, '..', 'dist')));
 
 const limiter = rateLimit({

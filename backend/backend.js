@@ -478,7 +478,7 @@ app.use((req, res) => {
 });
 
 // Sincronizar Base de Datos y encender
-sequelize.sync().then(async () => {
+sequelize.sync({ alter: true }).then(async () => {
     const usuarioCount = await Usuario.count();
     if (usuarioCount === 0) {
         const adminUser = process.env.ADMIN_USER || 'admin';

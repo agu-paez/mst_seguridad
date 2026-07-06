@@ -3,7 +3,12 @@ import { Sequelize, DataTypes } from 'sequelize';
 const DB_NAME = process.env.DB_NAME || 'u591520106_bdsistema';
 const DB_USER = process.env.DB_USER || 'u591520106_joel_benitez';
 const DB_PASS = process.env.DB_PASS || '';
-const DB_HOST = process.env.DB_HOST || 'localhost';
+const DB_HOST = process.env.DB_HOST || '127.0.0.1';
+
+if (!DB_PASS) {
+    console.error('ERROR: DB_PASS no está definido. Configurá la contraseña de MySQL en variables de entorno.');
+    process.exit(1);
+}
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
     host: DB_HOST,

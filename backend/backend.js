@@ -12,9 +12,12 @@ import { Op } from 'sequelize';
 import { sequelize, Producto, Factura, DetalleFactura, Usuario, Cliente, Trabajo, Presupuesto } from './db.js';
 import crypto from 'crypto';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Cargar variables de entorno desde .env manualmente (sin dotenv)
 try {
-    const envPath = path.resolve(new URL('.', import.meta.url).pathname, '..', '.env');
+    const envPath = path.resolve(__dirname, '..', '.env');
     if (fs.existsSync(envPath)) {
         const envContent = fs.readFileSync(envPath, 'utf-8');
         for (const line of envContent.split('\n')) {
@@ -97,8 +100,6 @@ const verificarToken = (req, res, next) => {
 };
 
 //---------------------PRODUCTOS---------------------
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, 'public', 'uploads');
 fs.mkdirSync(uploadDir, { recursive: true });
 app.use('/uploads', express.static(uploadDir));

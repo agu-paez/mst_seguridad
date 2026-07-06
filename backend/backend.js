@@ -496,9 +496,6 @@ app.use((req, res) => {
 
 // Sincronizar Base de Datos y encender
 sequelize.sync().then(async () => {
-    try { await sequelize.query("ALTER TABLE Trabajos ADD COLUMN usuarioId INTEGER REFERENCES usuarios(id)"); } catch {}
-    try { await sequelize.query("ALTER TABLE Presupuestos ADD COLUMN metodoPago VARCHAR(255) DEFAULT 'efectivo'"); } catch {}
-    try { await sequelize.query("ALTER TABLE Presupuestos ADD COLUMN subtotal FLOAT"); } catch {}
     const usuarioCount = await Usuario.count();
     if (usuarioCount === 0) {
         const adminUser = process.env.ADMIN_USER || 'admin';

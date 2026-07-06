@@ -1,20 +1,18 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dbPath = path.resolve(__dirname, '..', 'database.sqlite');
+const DB_NAME = process.env.DB_NAME || 'u591520106_bdsistema';
+const DB_USER = process.env.DB_USER || 'u591520106_joel_benitez';
+const DB_PASS = process.env.DB_PASS || '';
+const DB_HOST = process.env.DB_HOST || 'localhost';
 
-if (!fs.existsSync(dbPath)) {
-    fs.writeFileSync(dbPath, '');
-}
-
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: dbPath,
-    logging: false
+const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
+    host: DB_HOST,
+    dialect: 'mysql',
+    logging: false,
+    define: {
+        charset: 'utf8',
+        collate: 'utf8_general_ci'
+    }
 });
 
 // Modelo de Producto

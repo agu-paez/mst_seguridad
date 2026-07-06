@@ -28,7 +28,7 @@
     "react-router-dom": "^7.17.0",
     "recharts": "^3.8.1",
     "sequelize": "^6.37.8",
-    "sqlite3": "^5.1.7"
+    "mysql2": "^3.14.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

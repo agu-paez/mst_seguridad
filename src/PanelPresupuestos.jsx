@@ -77,7 +77,7 @@ function PanelPresupuestos() {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text('Soluciones integrales en seguridad electrónica', 58, 28);
-    doc.text('Tel: (011) 1234-5678 | Email: info@jbseguridad.com.ar', 58, 33);
+    doc.text('Tel: 3462369691 | Email: jb.seguridad.panelessolares@gmail.com', 58, 33);
 
     doc.setDrawColor(102, 126, 234);
     doc.setLineWidth(0.8);

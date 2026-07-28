@@ -26,7 +26,7 @@ function App() {
       <Router>
       <nav className="navbar">
         <NavLink to="/" className={({ isActive }) => `nombre${isActive ? ' activo' : ''}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-          <img src="/uploads/logoJB.jpeg" alt="JB_seguridad" className="logo" />
+          <img src="/logoJB.jpeg" alt="JB_seguridad" className="logo" />
           <span>JB_seguridad</span>
         </NavLink>
         
@@ -63,7 +63,7 @@ function App() {
         <footer className="footer">
           <div className="footer-content">
             <div className="footer-brand">
-              <img src="/uploads/logoJB.jpeg" alt="JB_seguridad" className="footer-logo" />
+              <img src="/logoJB.jpeg" alt="JB_seguridad" className="footer-logo" />
               <strong>JB_seguridad</strong>
             </div>
             <div className="footer-links">

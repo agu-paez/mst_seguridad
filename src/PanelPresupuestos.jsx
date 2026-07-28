@@ -4,7 +4,7 @@ import autoTable from 'jspdf-autotable';
 import { getApiUrl, getImageUrl } from './config';
 
 const FALLBACK_IMG = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44"><rect fill="#2a2a3d" width="44" height="44"/><text fill="#555" font-family="sans-serif" font-size="14" text-anchor="middle" x="22" y="28">?</text></svg>');
-const LOGO_URL = getImageUrl('/uploads/logoJB.jpeg');
+const LOGO_URL = '/logoJB.jpeg';
 
 const API = async (path, opts = {}) => {
   const token = localStorage.getItem('token');

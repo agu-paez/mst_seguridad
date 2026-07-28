@@ -7,7 +7,7 @@ function PanelAdmin() {
     <div className="panel-admin">
       <aside className="panel-sidebar">
         <div className="panel-logo">
-          <img src="/uploads/1781569405191-1781114119055-logo.jpeg" alt="MST" />
+          <img src="/uploads/logoJB.jpeg" alt="JB_seguridad" />
         </div>
         <nav className="panel-menu">
           <NavLink className={({ isActive }) => `panel-btn${isActive ? ' activo' : ''}`} to="/panel/dashboard">

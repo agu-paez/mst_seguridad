@@ -33,7 +33,7 @@
   flex-direction: column;
   gap: 12px;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.35);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   margin-bottom: 20px;
@@ -45,7 +45,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   font-size: 14px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.42);
   color: #fff;
   outline: none;
   font-family: inherit;
@@ -81,14 +81,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   transition: background 0.2s ease;
 }
 
 .usuario-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.42);
 }
 
 .usuario-info {

@@ -20,7 +20,7 @@ function Inicio() {
         <div className={`hero-content ${visible ? 'visible' : ''}`}>
           <div className="hero-badge">Seguridad & Energía</div>
           <h1 className="hero-title">
-            <span className="hero-title-main">MST Alarmas</span>
+            <span className="hero-title-main">JB_seguridad</span>
             <span className="hero-title-sub">& Paneles Solares</span>
           </h1>
           <p className="hero-desc">

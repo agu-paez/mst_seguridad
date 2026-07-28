@@ -26,8 +26,8 @@ function App() {
       <Router>
       <nav className="navbar">
         <NavLink to="/" className={({ isActive }) => `nombre${isActive ? ' activo' : ''}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-          <img src="/uploads/1781569405191-1781114119055-logo.jpeg" alt="MST Alarmas" className="logo" />
-          <span>MST Alarmas</span>
+          <img src="/uploads/logoJB.jpeg" alt="JB_seguridad" className="logo" />
+          <span>JB_seguridad</span>
         </NavLink>
         
         <div className="nav-enlaces">
@@ -63,8 +63,8 @@ function App() {
         <footer className="footer">
           <div className="footer-content">
             <div className="footer-brand">
-              <img src="/uploads/1781569405191-1781114119055-logo.jpeg" alt="MST" className="footer-logo" />
-              <strong>MST Alarmas & Seguridad</strong>
+              <img src="/uploads/logoJB.jpeg" alt="JB_seguridad" className="footer-logo" />
+              <strong>JB_seguridad</strong>
             </div>
             <div className="footer-links">
               <a href="#">Términos y Condiciones</a>
@@ -72,7 +72,7 @@ function App() {
               <a href="#">Aviso Legal</a>
             </div>
             <div className="footer-copy">
-              &copy; {new Date().getFullYear()} MST Alarmas & Seguridad. Todos los derechos reservados.
+              &copy; {new Date().getFullYear()} JB_seguridad. Todos los derechos reservados.
             </div>
           </div>
         </footer>

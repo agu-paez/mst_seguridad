@@ -4,7 +4,7 @@ import autoTable from 'jspdf-autotable';
 import { getApiUrl, getImageUrl } from './config';
 
 const FALLBACK_IMG = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44"><rect fill="#2a2a3d" width="44" height="44"/><text fill="#555" font-family="sans-serif" font-size="14" text-anchor="middle" x="22" y="28">?</text></svg>');
-const LOGO_URL = getImageUrl('/uploads/1781569405191-1781114119055-logo.jpeg');
+const LOGO_URL = getImageUrl('/uploads/logoJB.jpeg');
 
 const API = async (path, opts = {}) => {
   const token = localStorage.getItem('token');
@@ -73,11 +73,11 @@ function PanelPresupuestos() {
 
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text('MST Camaras & Alarmas', 58, 22);
+    doc.text('JB_seguridad', 58, 22);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text('Soluciones integrales en seguridad electrónica', 58, 28);
-    doc.text('Tel: (011) 1234-5678 | Email: info@mstalarmas.com.ar', 58, 33);
+    doc.text('Tel: (011) 1234-5678 | Email: info@jbseguridad.com.ar', 58, 33);
 
     doc.setDrawColor(102, 126, 234);
     doc.setLineWidth(0.8);
@@ -141,7 +141,7 @@ function PanelPresupuestos() {
 
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.text('MST Alarmas - Seguridad Inteligente', 14, finalY + 8);
+    doc.text('JB_seguridad - Seguridad Inteligente', 14, finalY + 8);
     doc.text('Gracias por confiar en nosotros.', 14, finalY + 14);
     doc.text('Válido por 15 días.', 14, finalY + 20);
 

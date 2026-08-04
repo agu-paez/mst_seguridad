@@ -22,13 +22,17 @@
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "multer": "^2.1.1",
+    "mysql2": "^3.14.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.79.0",
-    "react-router-dom": "^7.17.0",
+    "react-router-dom": "^7.18.2",
     "recharts": "^3.8.1",
     "sequelize": "^6.37.8",
-    "mysql2": "^3.14.1"
+    "uuid": "^11.1.1"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

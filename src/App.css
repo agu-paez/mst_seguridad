@@ -2685,6 +2685,32 @@ body {
   font-size: 11px;
 }
 
+/* Keep long product content inside the card and let grid rows stretch evenly. */
+.productos-grid {
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+}
+
+.productos-grid .producto-tarjeta {
+  min-width: 0;
+  min-height: 250px;
+  height: 100%;
+}
+
+.productos-grid .producto-tarjeta h3,
+.productos-grid .descripcion-producto {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.productos-grid .descripcion-producto {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
 @media (max-width: 768px) {
   .footer {
     margin-top: 20px;

@@ -193,7 +193,7 @@ function PanelPresupuestos() {
   };
 
   return (
-    <div className="panel-presupuestos">
+    <div className="panel-presupuestos presupuestos-scroll">
       <div className="presupuestos-header">
         <h1>Presupuestos</h1>
       </div>

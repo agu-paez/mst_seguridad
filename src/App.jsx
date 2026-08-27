@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Inicio from './inicio';
 import Login from './login';
 import PanelAdmin from './PanelAdmin';
-import PanelDashboard from './PanelDashboard';
 import PanelClientes from './PanelClientes';
 import PanelProductos from './PanelProductos';
 import PanelPresupuestos from './PanelPresupuestos';
@@ -36,7 +35,7 @@ function App() {
             {esStaff && (
               <>
                 <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/panel/clientes">Clientes</NavLink>
-                <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/panel/dashboard">Dashboard</NavLink>
+                <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/panel/presupuestos">Presupuestos</NavLink>
               </>
             )}
             {cargo === 'administrador' && (
@@ -60,8 +59,7 @@ function App() {
           <Route path="/panel" element={
             token ? <PanelAdmin /> : <Navigate to="/login" />
           }>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<PanelDashboard />} />
+            <Route index element={<Navigate to="presupuestos" replace />} />
             <Route path="clientes" element={<PanelClientes />} />
             {cargo === 'administrador' && <Route path="/panel/productos" element={<PanelProductos />} />}
             <Route path="presupuestos" element={<PanelPresupuestos />} />

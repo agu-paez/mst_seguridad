@@ -26,6 +26,7 @@ function PanelProductos() {
   const [mostrarForm, setMostrarForm] = useState(false);
   const [formProducto, setFormProducto] = useState({ nombre: '', precio: '', descripcion: '', imagenUrl: '', imagenFile: null });
   const [editandoId, setEditandoId] = useState(null);
+  const acortarNombre = (nombre, maximo = 34) => nombre.length > maximo ? `${nombre.slice(0, maximo).trim()}...` : nombre;
 
   useEffect(() => {
     API('/api/productos')
@@ -166,7 +167,7 @@ function PanelProductos() {
         {productos.map(p => (
           <div key={p.id} className="producto-tarjeta">
             <div className="producto-detalle">
-              <h3>{p.nombre}</h3>
+               <h3 title={p.nombre}>{acortarNombre(p.nombre)}</h3>
               <div className="producto-meta">
                 <span className={`estado ${p.disponible === false ? 'agotado' : 'disponible'}`}>
                   {p.disponible === false ? 'No disponible' : 'Disponible'}

@@ -2929,3 +2929,161 @@ body {
     width: 100%;
   }
 }
+
+/* Shared premium palette across the application. */
+body {
+  background: #f8f9fa;
+  color: #334155;
+}
+
+.navbar {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #e2e8f0;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+}
+
+.navbar:hover {
+  background: #fff;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.12);
+}
+
+.nombre,
+.btn-nav {
+  color: #334155;
+}
+
+.btn-nav:hover,
+.btn-nav.activo {
+  color: #0f172a;
+  background: transparent;
+}
+
+.nav-enlaces {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-nav.activo::after {
+  background: #b08a2e;
+}
+
+.panel-admin {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+}
+
+.panel-main h1,
+.panel-main h2,
+.panel-main h3 {
+  color: #0f172a;
+}
+
+.form-producto,
+.form-cliente,
+.form-trabajo,
+.clientes-lista,
+.cliente-detalle,
+.form-usuario,
+.usuarios-lista {
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.form-producto input,
+.form-producto textarea,
+.form-cliente input,
+.form-trabajo input,
+.form-trabajo textarea,
+.form-usuario input,
+.form-usuario select,
+.labor-field input,
+.labor-field select {
+  background: #fff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.producto-tarjeta {
+  min-width: 0;
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+}
+
+.producto-tarjeta h3,
+.producto-tarjeta .descripcion-producto {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.producto-tarjeta h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.producto-tarjeta .descripcion-producto {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.producto-tarjeta .producto-meta,
+.producto-tarjeta .producto-detalle {
+  min-width: 0;
+}
+
+.producto-tarjeta h3,
+.producto-tarjeta .producto-detalle {
+  color: #0f172a;
+}
+
+.pc-header .pc-cliente {
+  min-width: 0;
+  max-width: 28ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.producto-tarjeta .descripcion-producto {
+  color: #64748b;
+}
+
+.caracteristica-tarjeta {
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+}
+
+.caracteristica-tarjeta h3 {
+  color: #0f172a;
+}
+
+.caracteristica-tarjeta p {
+  color: #64748b;
+}
+
+.login-card {
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.1);
+}
+
+.login-header h1,
+.login-field label {
+  color: #0f172a;
+}
+
+.login-header p {
+  color: #64748b;
+}
+
+.footer {
+  background: #0f172a;
+}

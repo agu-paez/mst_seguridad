@@ -23,6 +23,8 @@ function PanelClientes() {
   const [formTrabajo, setFormTrabajo] = useState({ descripcion: '', labor: '', usuarioId: '' });
   const [prodsSel, setProdsSel] = useState([]);
   const [empleados, setEmpleados] = useState([]);
+  const [busquedaCliente, setBusquedaCliente] = useState('');
+  const [presupuestoDetalle, setPresupuestoDetalle] = useState(null);
 
   useEffect(() => {
     API('/api/clientes').then(setClientes);
@@ -128,6 +130,11 @@ function PanelClientes() {
     try { return JSON.parse(t.productos); } catch { return null; }
   };
 
+  const clientesFiltrados = clientes.filter(c => {
+    const texto = `${c.nombre} ${c.telefono || ''} ${c.email || ''} ${c.documento || ''}`.toLowerCase();
+    return texto.includes(busquedaCliente.toLowerCase());
+  });
+
   return (
     <div className="panel-clientes">
       <div className="clientes-header">
@@ -150,14 +157,16 @@ function PanelClientes() {
       )}
 
       <div className="clientes-layout">
-        <div className="clientes-lista">
-          {clientes.map(c => (
+         <div className="clientes-lista">
+           <input className="clientes-filtro" value={busquedaCliente} onChange={e => setBusquedaCliente(e.target.value)} placeholder="Buscar cliente..." />
+           {clientesFiltrados.map(c => (
             <div key={c.id} className={`cliente-item ${clienteSel?.id === c.id ? 'sel' : ''}`} onClick={() => cargarCliente(c.id)}>
               <strong>{c.nombre}</strong>
               <small>{c.telefono || 'Sin teléfono'} · {c.fechaCreacion}</small>
             </div>
-          ))}
-        </div>
+             ))}
+           {clientesFiltrados.length === 0 && <p className="clientes-sin-resultados">No se encontraron clientes.</p>}
+         </div>
 
         {clienteSel && (
           <div className="cliente-detalle">
@@ -178,6 +187,7 @@ function PanelClientes() {
                 <strong>{p.fecha}</strong>
                 <span>${parsePrecio(p.total).toLocaleString()}</span>
                 <small className={`estado-presupuesto ${p.estado || 'pendiente'}`}>{p.estado || 'Pendiente'}</small>
+                <button type="button" className="btn-detalle-presupuesto" onClick={() => setPresupuestoDetalle(p)}>Detalle</button>
               </div>
             ))}
 
@@ -293,6 +303,44 @@ function PanelClientes() {
           </div>
         )}
       </div>
+
+      {presupuestoDetalle && (
+        <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setPresupuestoDetalle(null); }}>
+          <div className="cliente-modal presupuesto-detalle-modal">
+            <div className="modal-header">
+              <div>
+                <span className="modal-kicker">Presupuesto #{presupuestoDetalle.id}</span>
+                <h2>Detalle del presupuesto</h2>
+              </div>
+              <button type="button" className="modal-close" onClick={() => setPresupuestoDetalle(null)} aria-label="Cerrar">×</button>
+            </div>
+            <div className="detalle-presupuesto-meta">
+              <span><strong>Fecha:</strong> {presupuestoDetalle.fecha}</span>
+              <span><strong>Cliente:</strong> {clienteSel?.nombre || presupuestoDetalle.Cliente?.nombre || '-'}</span>
+              <span><strong>Pago:</strong> {presupuestoDetalle.metodoPago === 'credito' ? 'Crédito' : presupuestoDetalle.metodoPago === 'cheques' ? 'Cheques' : 'Efectivo'}</span>
+              <span><strong>Estado:</strong> {presupuestoDetalle.estado || 'Pendiente'}</span>
+            </div>
+            <div className="detalle-presupuesto-items">
+              <div className="detalle-presupuesto-heading"><span>Producto</span><span>Cant.</span><span>Subtotal</span></div>
+              {(() => {
+                let itemsDetalle = [];
+                try { itemsDetalle = JSON.parse(presupuestoDetalle.items); } catch { /* Presupuesto antiguo sin detalle válido. */ }
+                return itemsDetalle.map((item, index) => (
+                  <div className="detalle-presupuesto-item" key={`${item.id || item.nombre}-${index}`}>
+                    <span>{item.nombre}</span>
+                    <span>{item.cantidad}</span>
+                    <strong>${(parsePrecio(item.precio) * parseCantidad(item.cantidad)).toLocaleString()}</strong>
+                  </div>
+                ));
+              })()}
+            </div>
+            <div className="detalle-presupuesto-total">
+              <span>Total</span>
+              <strong>${parsePrecio(presupuestoDetalle.total).toLocaleString()}</strong>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

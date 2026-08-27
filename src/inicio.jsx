@@ -1,4 +1,3 @@
-import { NavLink } from 'react-router-dom';
 
 function Inicio() {
   return (
@@ -19,10 +18,15 @@ function Inicio() {
           <p className="hero-desc">
             Los mejores sistemas de prevención y monitoreo para tu seguridad, sumado a soluciones de energía solar para tu hogar o comercio.
           </p>
-          <NavLink className="btn-hero" to="/login">
-            <span>Solicitar presupuesto</span>
+          <a
+            className="btn-hero"
+            href="https://wa.me/5493462369691?text=Hola%2C%20quiero%20solicitar%20un%20presupuesto."
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>Solicitar presupuesto por WhatsApp</span>
             <span className="btn-arrow" aria-hidden="true">→</span>
-          </NavLink>
+          </a>
         </div>
 
         <div className="hero-stats">

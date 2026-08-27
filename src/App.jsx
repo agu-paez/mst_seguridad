@@ -11,6 +11,7 @@ import './App.css';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const cargo = localStorage.getItem('cargo');
   const esStaff = cargo === 'administrador' || cargo === 'empleado';
 
@@ -29,8 +30,11 @@ function App() {
           <span>JB Seguridad</span>
         </NavLink>
         
-        <div className="nav-enlaces">
-          <nav>
+        <button className="menu-toggle" type="button" onClick={() => setMenuAbierto(!menuAbierto)} aria-expanded={menuAbierto} aria-label="Abrir menú">
+          <span></span><span></span><span></span>
+        </button>
+        <div className={`nav-enlaces${menuAbierto ? ' abierto' : ''}`}>
+          <nav onClick={() => setMenuAbierto(false)}>
             <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/">Inicio</NavLink>
             {esStaff && (
               <>

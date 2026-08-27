@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { getApiUrl, getImageUrl } from './config';
+import { getApiUrl } from './config';
 
-const FALLBACK_IMG = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44"><rect fill="#2a2a3d" width="44" height="44"/><text fill="#555" font-family="sans-serif" font-size="14" text-anchor="middle" x="22" y="28">?</text></svg>');
 const LOGO_URL = '/logoJB.jpeg';
 
 const API = async (path, opts = {}) => {
@@ -283,7 +282,6 @@ function PanelPresupuestos() {
           <div className="pf-grid">
             {productos.map(p => (
               <div key={p.id} className="pf-item" onClick={() => agregarItem(p)}>
-                <img src={getImageUrl(p.imagen) || FALLBACK_IMG} alt={p.nombre} onError={(e) => { if (e.target.src !== FALLBACK_IMG) e.target.src = FALLBACK_IMG; }} />
                 <strong>{p.nombre}</strong>
                 <small>${p.precio?.toLocaleString()}</small>
               </div>

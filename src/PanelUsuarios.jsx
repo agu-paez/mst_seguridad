@@ -15,6 +15,7 @@ function PanelUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [form, setForm] = useState({ nombre: '', password: '', cargo: 'empleado' });
   const [mostrarForm, setMostrarForm] = useState(false);
+  const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -24,22 +25,37 @@ function PanelUsuarios() {
   const crearUsuario = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.nombre || !form.password) {
-      setError('Nombre y contraseña requeridos');
+    if (!form.nombre || (!usuarioEditando && !form.password)) {
+      setError(usuarioEditando ? 'Nombre requerido' : 'Nombre y contraseña requeridos');
       return;
     }
     try {
-      const nuevo = await API('/api/usuarios', {
-        method: 'POST',
+      const nuevo = await API(usuarioEditando ? `/api/usuarios/${usuarioEditando.id}` : '/api/usuarios', {
+        method: usuarioEditando ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
-      setUsuarios([...usuarios, nuevo]);
+      setUsuarios(usuarioEditando ? usuarios.map(u => u.id === nuevo.id ? nuevo : u) : [...usuarios, nuevo]);
       setForm({ nombre: '', password: '', cargo: 'empleado' });
       setMostrarForm(false);
+      setUsuarioEditando(null);
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const editarUsuario = (usuario) => {
+    setUsuarioEditando(usuario);
+    setForm({ nombre: usuario.nombre, password: '', cargo: usuario.cargo });
+    setError('');
+    setMostrarForm(true);
+  };
+
+  const cancelarFormulario = () => {
+    setMostrarForm(false);
+    setUsuarioEditando(null);
+    setForm({ nombre: '', password: '', cargo: 'empleado' });
+    setError('');
   };
 
   const eliminarUsuario = async (id) => {
@@ -56,7 +72,7 @@ function PanelUsuarios() {
     <div className="panel-usuarios">
       <div className="usuarios-header">
         <h1>Usuarios</h1>
-        <button className="btn-agregar-usuario" onClick={() => setMostrarForm(true)}>+ Nuevo Usuario</button>
+        <button className="btn-agregar-usuario" onClick={() => { cancelarFormulario(); setMostrarForm(true); }}>+ Nuevo Usuario</button>
       </div>
 
       {mostrarForm && (
@@ -64,15 +80,15 @@ function PanelUsuarios() {
           {error && <p className="form-error">{error}</p>}
           <input placeholder="Nombre de usuario" value={form.nombre}
             onChange={e => setForm({ ...form, nombre: e.target.value })} required spellCheck={false} />
-          <input type="password" placeholder="Contraseña" value={form.password}
-            onChange={e => setForm({ ...form, password: e.target.value })} required autoComplete="new-password" />
+          <input type="password" placeholder={usuarioEditando ? 'Nueva contraseña (opcional)' : 'Contraseña'} value={form.password}
+            onChange={e => setForm({ ...form, password: e.target.value })} required={!usuarioEditando} autoComplete="new-password" />
           <select translate="no" value={form.cargo} onChange={e => setForm({ ...form, cargo: e.target.value })}>
             <option value="empleado">Empleado</option>
             <option value="administrador">Administrador</option>
           </select>
           <div className="form-acciones">
-            <button type="submit" className="btn-guardar">Guardar</button>
-            <button type="button" className="btn-cancelar" onClick={() => { setMostrarForm(false); setError(''); }}>Cancelar</button>
+            <button type="submit" className="btn-guardar">{usuarioEditando ? 'Guardar cambios' : 'Guardar'}</button>
+            <button type="button" className="btn-cancelar" onClick={cancelarFormulario}>Cancelar</button>
           </div>
         </form>
       )}
@@ -84,7 +100,10 @@ function PanelUsuarios() {
               <strong>{u.nombre}</strong>
               <span className={`usuario-cargo cargo-${u.cargo}`}>{u.cargo}</span>
             </div>
-            <button className="btn-eliminar" onClick={() => eliminarUsuario(u.id)}>✕</button>
+             <div className="usuario-acciones">
+               <button className="btn-editar-usuario" onClick={() => editarUsuario(u)}>Editar</button>
+               <button className="btn-eliminar" onClick={() => eliminarUsuario(u.id)}>✕</button>
+             </div>
           </div>
         ))}
         {usuarios.length === 0 && (

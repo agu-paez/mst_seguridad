@@ -1336,6 +1336,7 @@ body {
   border-radius: 8px;
   margin: 6px 6px 0 0;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 100%;
 }
 
 /* Product selector in trabajo form */
@@ -1479,6 +1480,24 @@ body {
   width: 200px;
 }
 
+.labor-field select,
+.trabajo-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.42);
+  color: #fff;
+  font: inherit;
+  outline: none;
+}
+
+.labor-field select:focus,
+.trabajo-select:focus {
+  border-color: #22d3ee;
+}
+
 .monto-total-field {
   font-size: 18px;
   color: #2ecc71;
@@ -1496,6 +1515,27 @@ body {
 }
 
 .presupuestos-header h1 { margin: 0; }
+
+.section-kicker {
+  display: block;
+  margin-bottom: 4px;
+  color: #67e8f9;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.btn-cancelar-edicion {
+  padding: 9px 13px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
 
 .presupuesto-form {
   display: grid;
@@ -1539,6 +1579,32 @@ body {
 
 .pf-row input:focus {
   border-color: rgba(102, 126, 234, 0.5);
+}
+
+.productos-filtro {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 9px;
+  background: rgba(2, 6, 23, 0.42);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.productos-filtro:focus {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+}
+
+.productos-sin-resultados {
+  grid-column: 1 / -1;
+  padding: 18px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  text-align: center;
 }
 
 .historial-cliente-titulo {
@@ -1897,6 +1963,7 @@ body {
   align-items: center;
   gap: 8px;
   min-height: 66px;
+  min-width: 0;
   padding: 14px 10px;
   background: rgba(0, 0, 0, 0.38);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1924,6 +1991,7 @@ body {
   text-align: center;
   line-height: 1.3;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .pf-item small {
@@ -1936,6 +2004,11 @@ body {
   flex-direction: column;
   gap: 6px;
   flex: 1;
+  max-height: 310px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-color: rgba(34, 211, 238, 0.45) transparent;
+  scrollbar-width: thin;
 }
 
 .pf-seleccionados > label {
@@ -2065,6 +2138,11 @@ body {
 /* Presupuestos history */
 .presupuestos-historial {
   margin-top: 8px;
+  max-height: 390px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-color: rgba(34, 211, 238, 0.45) transparent;
+  scrollbar-width: thin;
 }
 
 .presupuestos-historial h2 {
@@ -2126,6 +2204,22 @@ body {
 .pc-acciones {
   display: flex;
   gap: 8px;
+}
+
+.btn-editar-presupuesto {
+  padding: 6px 11px;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: 8px;
+  background: rgba(34, 211, 238, 0.1);
+  color: #67e8f9;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.btn-editar-presupuesto:hover {
+  background: rgba(34, 211, 238, 0.2);
 }
 
 .pc-acciones .btn-eliminar {
@@ -2392,20 +2486,22 @@ body {
   .trabajo-monto { font-size: 13px; }
 
   .pf-cant { flex-wrap: wrap; gap: 4px; padding: 6px 8px; }
-  .pf-nombre { flex: 1 1 100%; order: -1; font-size: 12px; }
+  .pf-seleccionados { max-height: 260px; }
+  .pf-nombre { flex: 1 1 100%; order: -1; min-width: 0; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
   .pf-precio { min-width: 0; font-size: 11px; }
   .pf-subtotal { min-width: 0; font-size: 12px; }
   .pf-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 6px; max-height: 260px; }
-  .pf-item { padding: 8px 6px; }
+  .pf-item { min-width: 0; padding: 8px 6px; }
   .pf-item img { width: 30px; height: 30px; }
-  .pf-item strong { font-size: 11px; }
-  .pf-item small { font-size: 10px; }
+  .pf-item strong { display: -webkit-box; width: 100%; overflow: hidden; font-size: 11px; line-height: 1.25; -webkit-box-orient: vertical; -webkit-line-clamp: 2; word-break: break-word; }
+  .pf-item small { max-width: 100%; overflow-wrap: anywhere; font-size: 10px; }
   .pf-total { font-size: 14px; }
   .pf-total-final { font-size: 16px; }
   .pf-metodo-pago { flex-direction: row; gap: 4px; }
   .pf-metodo-btn { font-size: 11px; padding: 6px 4px; }
 
   .presupuesto-card { flex-direction: column; align-items: stretch; gap: 4px; padding: 10px 12px; }
+  .presupuestos-historial { max-height: 320px; }
   .pc-header { flex-wrap: wrap; gap: 4px; }
   .pc-header strong { min-width: 0; font-size: 12px; }
   .pc-cliente { font-size: 12px; }

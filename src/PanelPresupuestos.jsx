@@ -20,6 +20,8 @@ function PanelPresupuestos() {
   const [clientes, setClientes] = useState([]);
   const [presupuestos, setPresupuestos] = useState([]);
   const [items, setItems] = useState([]);
+  const [productoQuery, setProductoQuery] = useState('');
+  const [presupuestoEditando, setPresupuestoEditando] = useState(null);
   const [clienteId, setClienteId] = useState('');
   const [clienteQuery, setClienteQuery] = useState('');
   const [clientesAbierto, setClientesAbierto] = useState(false);
@@ -39,6 +41,7 @@ function PanelPresupuestos() {
     const texto = `${c.nombre} ${c.telefono || ''} ${c.email || ''} ${c.direccion || ''} ${c.documento || ''}`.toLowerCase();
     return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(clienteQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
   });
+  const productosFiltrados = productos.filter(p => `${p.nombre} ${p.descripcion || ''}`.toLowerCase().includes(productoQuery.toLowerCase()));
 
   const seleccionarCliente = (clienteSeleccionadoNuevo) => {
     setClienteId(clienteSeleccionadoNuevo.id);
@@ -196,8 +199,8 @@ function PanelPresupuestos() {
       return;
     }
     try {
-      const nuevo = await API('/api/presupuestos', {
-        method: 'POST',
+      const nuevo = await API(presupuestoEditando ? `/api/presupuestos/${presupuestoEditando.id}` : '/api/presupuestos', {
+        method: presupuestoEditando ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           clienteId: clienteSeleccionado.id,
@@ -207,15 +210,39 @@ function PanelPresupuestos() {
           subtotal
         })
       });
-      setPresupuestos([nuevo, ...presupuestos]);
+      setPresupuestos(presupuestoEditando
+        ? presupuestos.map(p => p.id === nuevo.id ? nuevo : p)
+        : [nuevo, ...presupuestos]);
       await generarPDF(items, clienteSeleccionado.nombre, subtotal, subtotal, metodoPago, nuevo.fecha);
       setItems([]);
       setClienteId('');
       setClienteQuery('');
       setMetodoPago('efectivo');
+      setPresupuestoEditando(null);
     } catch (err) {
       alert('Error al guardar presupuesto: ' + err.message);
     }
+  };
+
+  const editarPresupuesto = (presupuesto) => {
+    let itemsEditados;
+    try { itemsEditados = JSON.parse(presupuesto.items); } catch { return; }
+    const clienteEditado = clientes.find(c => String(c.id) === String(presupuesto.clienteId));
+    setItems(itemsEditados);
+    setClienteId(presupuesto.clienteId || clienteEditado?.id || '');
+    setClienteQuery(clienteEditado?.nombre || presupuesto.cliente || '');
+    setMetodoPago(presupuesto.metodoPago || 'efectivo');
+    setProductoQuery('');
+    setPresupuestoEditando(presupuesto);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelarEdicion = () => {
+    setPresupuestoEditando(null);
+    setItems([]);
+    setClienteId('');
+    setClienteQuery('');
+    setMetodoPago('efectivo');
   };
 
   const eliminarPresupuesto = async (id) => {
@@ -238,7 +265,11 @@ function PanelPresupuestos() {
   return (
     <div className="panel-presupuestos presupuestos-scroll">
       <div className="presupuestos-header">
-        <h1>Presupuestos</h1>
+          <div>
+            <span className="section-kicker">Gestión comercial</span>
+            <h1>{presupuestoEditando ? 'Editar presupuesto' : 'Nuevo presupuesto'}</h1>
+          </div>
+          {presupuestoEditando && <button type="button" className="btn-cancelar-edicion" onClick={cancelarEdicion}>Cancelar edición</button>}
       </div>
 
       <div className="presupuesto-form">
@@ -279,14 +310,15 @@ function PanelPresupuestos() {
           )}
 
           <label>Productos disponibles</label>
+          <input className="productos-filtro" value={productoQuery} onChange={e => setProductoQuery(e.target.value)} placeholder="Buscar producto..." />
           <div className="pf-grid">
-            {productos.map(p => (
+            {productosFiltrados.map(p => (
               <div key={p.id} className="pf-item" onClick={() => agregarItem(p)}>
                 <strong>{p.nombre}</strong>
                 <small>${p.precio?.toLocaleString()}</small>
               </div>
             ))}
-            {productos.length === 0 && <p style={{ color: 'rgba(255,255,255,0.3)', gridColumn: '1 / -1', textAlign: 'center', padding: 20 }}>No hay productos disponibles.</p>}
+            {productosFiltrados.length === 0 && <p className="productos-sin-resultados">No hay productos que coincidan.</p>}
           </div>
         </div>
 
@@ -332,7 +364,7 @@ function PanelPresupuestos() {
 
           <div className="pf-actions">
             <button className="btn-generar-pdf" onClick={guardarPresupuesto} disabled={items.length === 0}>
-              Generar PDF & Guardar
+              {presupuestoEditando ? 'Guardar cambios' : 'Generar PDF & Guardar'}
             </button>
           </div>
         </div>
@@ -351,6 +383,7 @@ function PanelPresupuestos() {
                 <span className="pc-total">${parseFloat(p.total).toLocaleString()}</span>
               </div>
               <div className="pc-acciones">
+                <button className="btn-editar-presupuesto" onClick={(e) => { e.stopPropagation(); editarPresupuesto(p); }}>Editar</button>
                 <button className="btn-eliminar" onClick={(e) => { e.stopPropagation(); eliminarPresupuesto(p.id); }}>✕</button>
               </div>
             </div>

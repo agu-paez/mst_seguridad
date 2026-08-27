@@ -381,6 +381,24 @@ app.post('/api/usuarios', verificarToken, async (req, res) => {
     }
 });
 
+app.put('/api/usuarios/:id', verificarToken, async (req, res) => {
+    try {
+        if (req.usuario.cargo !== 'administrador') {
+            return res.status(403).json({ error: 'Solo administradores pueden editar usuarios' });
+        }
+        const usuario = await Usuario.findByPk(req.params.id);
+        if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+        const { nombre, password, cargo } = req.body;
+        if (!nombre) return res.status(400).json({ error: 'Nombre requerido' });
+        const cambios = { nombre, cargo: ['empleado', 'administrador'].includes(cargo) ? cargo : usuario.cargo };
+        if (password) cambios.password = await bcrypt.hash(password, 10);
+        await usuario.update(cambios);
+        res.json({ id: usuario.id, nombre: usuario.nombre, cargo: usuario.cargo });
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
 app.delete('/api/usuarios/:id', verificarToken, async (req, res) => {
     try {
         if (req.usuario.cargo !== 'administrador') {
@@ -461,6 +479,47 @@ app.post('/api/presupuestos', verificarToken, async (req, res) => {
         res.status(201).json(presupuesto);
     } catch (error) {
         res.status(500).json({ error: "Error interno del servidor" });
+    }
+});
+
+app.put('/api/presupuestos/:id', verificarToken, async (req, res) => {
+    try {
+        const { clienteId, items, total, metodoPago, subtotal } = req.body;
+        if (!clienteId || !items || total === undefined) {
+            return res.status(400).json({ error: "clienteId, items y total requeridos" });
+        }
+        const presupuesto = await Presupuesto.findByPk(req.params.id);
+        if (!presupuesto) return res.status(404).json({ error: "Presupuesto no encontrado" });
+        const clienteSeleccionado = await Cliente.findByPk(clienteId);
+        if (!clienteSeleccionado) return res.status(404).json({ error: "Cliente no encontrado" });
+        await presupuesto.update({
+            cliente: clienteSeleccionado.nombre,
+            clienteId: parseInt(clienteSeleccionado.id),
+            items: JSON.stringify(items),
+            total: parseFloat(total),
+            metodoPago: metodoPago || 'efectivo',
+            subtotal: subtotal !== undefined ? parseFloat(subtotal) : parseFloat(total)
+        });
+        const actualizado = await Presupuesto.findByPk(presupuesto.id, {
+            include: [{ model: Cliente, attributes: ['id', 'nombre', 'telefono', 'email', 'direccion', 'documento'] }]
+        });
+        res.json(actualizado);
+    } catch (error) {
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+});
+
+app.patch('/api/presupuestos/:id/estado', verificarToken, async (req, res) => {
+    try {
+        const estadosValidos = ['pendiente', 'aprobado', 'completado', 'rechazado'];
+        const { estado } = req.body;
+        if (!estadosValidos.includes(estado)) return res.status(400).json({ error: 'Estado inválido' });
+        const presupuesto = await Presupuesto.findByPk(req.params.id);
+        if (!presupuesto) return res.status(404).json({ error: 'Presupuesto no encontrado' });
+        await presupuesto.update({ estado });
+        res.json(presupuesto);
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 

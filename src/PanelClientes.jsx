@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getApiUrl, getImageUrl } from './config';
-
-const FALLBACK_IMG_SMALL = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect fill="#2a2a3d" width="40" height="40"/><text fill="#555" font-family="sans-serif" font-size="12" text-anchor="middle" x="20" y="25">?</text></svg>');
+import { getApiUrl } from './config';
 
 const API = async (path, opts = {}) => {
   const token = localStorage.getItem('token');
@@ -20,7 +18,7 @@ function PanelClientes() {
   const [form, setForm] = useState({ nombre: '', telefono: '', email: '', direccion: '', documento: '' });
   const [mostrarForm, setMostrarForm] = useState(false);
   const [mostrarTrabajo, setMostrarTrabajo] = useState(false);
-  const [formTrabajo, setFormTrabajo] = useState({ descripcion: '', labor: '', usuarioId: '' });
+  const [formTrabajo, setFormTrabajo] = useState({ descripcion: '', labor: '', usuarioId: '', presupuestoId: '', estadoPresupuesto: 'pendiente' });
   const [prodsSel, setProdsSel] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [busquedaCliente, setBusquedaCliente] = useState('');
@@ -96,7 +94,7 @@ function PanelClientes() {
     fd.append('clienteId', clienteSel.id);
     fd.append('descripcion', formTrabajo.descripcion);
     fd.append('monto', montoFinal.toString());
-    fd.append('productos', JSON.stringify(prodsSel));
+      fd.append('productos', JSON.stringify(prodsSel));
     if (formTrabajo.usuarioId) fd.append('usuarioId', formTrabajo.usuarioId);
     const fileInput = document.getElementById('imgTrabajo');
     if (fileInput?.files) {
@@ -106,7 +104,14 @@ function PanelClientes() {
       const token = localStorage.getItem('token');
       const r = await fetch(getApiUrl('/api/trabajos'), { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
       if (!r.ok) { const e = await r.json(); alert('Error: ' + (e.error || 'desconocido')); return; }
-      setFormTrabajo({ descripcion: '', labor: '', usuarioId: '' });
+      if (formTrabajo.presupuestoId) {
+        await API(`/api/presupuestos/${formTrabajo.presupuestoId}/estado`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estado: formTrabajo.estadoPresupuesto })
+        });
+      }
+      setFormTrabajo({ descripcion: '', labor: '', usuarioId: '', presupuestoId: '', estadoPresupuesto: 'pendiente' });
       setProdsSel([]);
       setMostrarTrabajo(false);
       await cargarCliente(clienteSel.id);
@@ -203,7 +208,6 @@ function PanelClientes() {
                   <div className="prod-grid">
                     {productos.map(p => (
                       <div key={p.id} className="prod-item" onClick={() => agregarProd(p)}>
-                        <img src={getImageUrl(p.imagen) || FALLBACK_IMG_SMALL} alt={p.nombre} onError={(e) => { if (e.target.src !== FALLBACK_IMG_SMALL) e.target.src = FALLBACK_IMG_SMALL; }} />
                         <span>{p.nombre}</span>
                         <small>${p.precio?.toLocaleString()}</small>
                       </div>
@@ -234,8 +238,28 @@ function PanelClientes() {
                 )}
 
                 <div className="labor-field">
+                  <label>Presupuesto relacionado:</label>
+                  <select value={formTrabajo.presupuestoId} onChange={e => setFormTrabajo({ ...formTrabajo, presupuestoId: e.target.value })}>
+                    <option value="">Sin presupuesto relacionado</option>
+                    {clienteSel.Presupuestos?.map(p => (
+                      <option key={p.id} value={p.id}>#{p.id} · {p.fecha} · ${parsePrecio(p.total).toLocaleString()}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="labor-field">
+                  <label>Estado del presupuesto:</label>
+                  <select value={formTrabajo.estadoPresupuesto} onChange={e => setFormTrabajo({ ...formTrabajo, estadoPresupuesto: e.target.value })}>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="aprobado">Aprobado</option>
+                    <option value="completado">Completado</option>
+                    <option value="rechazado">Rechazado</option>
+                  </select>
+                </div>
+
+                <div className="labor-field">
                   <label>Empleado que realizó el trabajo:</label>
-                  <select value={formTrabajo.usuarioId} onChange={e => setFormTrabajo({ ...formTrabajo, usuarioId: e.target.value })} style={{ padding: '12px 14px', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, fontSize: 14, background: 'rgba(255,255,255,0.05)', color: '#fff', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' }}>
+                  <select className="trabajo-select" value={formTrabajo.usuarioId} onChange={e => setFormTrabajo({ ...formTrabajo, usuarioId: e.target.value })}>
                     <option value="">Seleccionar empleado</option>
                     {empleados.map(e => (
                       <option key={e.id} value={e.id} style={{ color: '#000' }}>{e.nombre} ({e.cargo})</option>

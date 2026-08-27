@@ -195,14 +195,15 @@ body {
 
 .producto-tarjeta {
   background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
-  padding: 0;
+  padding: 20px;
   border-radius: 28px;
   overflow: hidden;
   box-shadow: 0 28px 80px rgba(16, 47, 112, 0.12);
   border: 1px solid rgba(99, 132, 255, 0.15);
   display: flex;
   flex-direction: column;
-  min-height: 520px;
+  height: 100%;
+  box-sizing: border-box;
   transition: transform 0.28s ease, box-shadow 0.28s ease;
 }
 
@@ -211,15 +212,8 @@ body {
   box-shadow: 0 36px 95px rgba(16, 47, 112, 0.18);
 }
 
-.producto-imagen {
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-}
-
 .producto-detalle {
-  padding: 26px 24px 24px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -279,6 +273,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+  margin-top: auto;
 }
 
 .btn-agregar,
@@ -895,12 +890,8 @@ body {
     min-height: auto;
   }
 
-  .producto-imagen {
-    height: 160px;
-  }
-
   .producto-detalle {
-    padding: 12px;
+    padding: 0;
     gap: 8px;
   }
 
@@ -945,10 +936,6 @@ body {
   .btn-nav {
     font-size: 12px;
     padding: 6px 10px;
-  }
-
-  .producto-imagen {
-    height: 180px;
   }
 
   .login-header h1 {
@@ -1857,6 +1844,8 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -1865,15 +1854,8 @@ body {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
-.producto-imagen {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
 .producto-detalle {
-  padding: 16px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1933,6 +1915,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  margin-top: auto;
 }
 
 .btn-editar,
@@ -2063,9 +2046,7 @@ body {
   .form-producto { grid-template-columns: 1fr; padding: 12px; gap: 8px; }
   .form-producto input, .form-producto textarea { font-size: 13px; padding: 8px 10px; }
   .productos-grid { gap: 10px; }
-  .producto-tarjeta { min-height: auto; }
-  .producto-imagen { height: 130px; }
-  .producto-detalle { padding: 12px; gap: 8px; }
+  .producto-detalle { gap: 8px; }
   .producto-tarjeta h3 { font-size: 14px; }
   .descripcion-producto { font-size: 11px; min-height: 0; }
   .precio { font-size: 15px; }
@@ -2129,8 +2110,6 @@ body {
   .pf-item img { width: 26px; height: 26px; }
   .pf-item strong { font-size: 10px; }
   .pf-metodo-btn { font-size: 10px; padding: 5px 3px; }
-
-  .producto-imagen { height: 110px; }
 
   .chart-box { padding: 8px; }
 

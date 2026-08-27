@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getApiUrl, getImageUrl } from './config';
-
-const FALLBACK_IMG = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="360" height="240"><rect fill="#2a2a3d" width="360" height="240"/><text fill="#555" font-family="sans-serif" font-size="16" text-anchor="middle" x="180" y="120">Sin imagen</text></svg>');
+import { getApiUrl } from './config';
 
 const API = async (path, opts = {}) => {
   const token = localStorage.getItem('token');
@@ -167,7 +165,6 @@ function PanelProductos() {
       <div className="productos-grid">
         {productos.map(p => (
           <div key={p.id} className="producto-tarjeta">
-            <img src={getImageUrl(p.imagen) || FALLBACK_IMG} alt={p.nombre} className="producto-imagen" onError={(e) => { if (e.target.src !== FALLBACK_IMG) e.target.src = FALLBACK_IMG; }} />
             <div className="producto-detalle">
               <h3>{p.nombre}</h3>
               <div className="producto-meta">

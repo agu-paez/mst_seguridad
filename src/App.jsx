@@ -34,7 +34,16 @@ function App() {
           <nav>
             <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/">Inicio</NavLink>
             {esStaff && (
-              <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/panel/dashboard">Panel</NavLink>
+              <>
+                <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/panel/clientes">Clientes</NavLink>
+                <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/panel/dashboard">Dashboard</NavLink>
+              </>
+            )}
+            {cargo === 'administrador' && (
+              <>
+                <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/panel/productos">Productos</NavLink>
+                <NavLink className={({ isActive }) => `btn-nav${isActive ? ' activo' : ''}`} to="/panel/usuarios">Usuarios</NavLink>
+              </>
             )}
             {token ? (
               <NavLink className="btn-nav" to="/" onClick={cerrarSesion}>Cerrar Sesión</NavLink>

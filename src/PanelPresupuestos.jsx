@@ -91,6 +91,7 @@ function PanelPresupuestos() {
   };
 
   const subtotal = items.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  const acortarNombre = (nombre, maximo = 30) => nombre.length > maximo ? `${nombre.slice(0, maximo).trim()}...` : nombre;
 
   const cargarImagen = useCallback((url) => {
     return new Promise((resolve) => {
@@ -338,7 +339,7 @@ function PanelPresupuestos() {
             {items.length === 0 && <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13, padding: 12, textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 10 }}>Hacé clic en un producto de la izquierda para agregarlo.</p>}
             {items.map(i => (
               <div key={i.id} className="pf-cant">
-                <span className="pf-nombre">{i.nombre}</span>
+                <span className="pf-nombre" title={i.nombre}>{acortarNombre(i.nombre)}</span>
                 <div className="cant-control">
                   <button type="button" onClick={() => cambiarCantidad(i.id, i.cantidad - 1)}>-</button>
                   <span>{i.cantidad}</span>

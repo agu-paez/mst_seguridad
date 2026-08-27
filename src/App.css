@@ -2738,3 +2738,194 @@ body {
   .footer-links a { font-size: 11px; }
   .footer-copy { font-size: 10px; }
 }
+
+/* Premium light theme for the quote workspace. */
+.panel-presupuestos {
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #fff;
+  color: #334155;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.panel-presupuestos h1,
+.panel-presupuestos h2 {
+  color: #0f172a;
+}
+
+.panel-presupuestos .section-kicker {
+  color: #a47b16;
+}
+
+.panel-presupuestos .presupuestos-header {
+  border-bottom-color: #e2e8f0;
+}
+
+.panel-presupuestos .presupuesto-form,
+.panel-presupuestos .presupuestos-historial {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  box-shadow: none;
+}
+
+.panel-presupuestos .pf-left > label,
+.panel-presupuestos .pf-right > label,
+.panel-presupuestos .pf-seleccionados > label,
+.panel-presupuestos .productos-trabajo-header label {
+  color: #475569;
+}
+
+.panel-presupuestos .cliente-buscador > input,
+.panel-presupuestos .productos-filtro {
+  border-color: #cbd5e1;
+  background: #fff;
+  color: #0f172a;
+}
+
+.panel-presupuestos .cliente-buscador > input::placeholder,
+.panel-presupuestos .productos-filtro::placeholder {
+  color: #94a3b8;
+}
+
+.panel-presupuestos .clientes-resultados {
+  background: #fff;
+  border-color: #cbd5e1;
+  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.14);
+}
+
+.panel-presupuestos .cliente-resultado {
+  color: #0f172a;
+}
+
+.panel-presupuestos .cliente-resultado small {
+  color: #64748b;
+}
+
+.panel-presupuestos .cliente-resultado:hover {
+  background: #f1f5f9;
+}
+
+.panel-presupuestos .crear-cliente-opcion {
+  color: #9a7214;
+}
+
+.panel-presupuestos .cliente-resumen {
+  border-color: #dfc477;
+  background: #fffaf0;
+}
+
+.panel-presupuestos .cliente-resumen strong {
+  color: #0f172a;
+}
+
+.panel-presupuestos .cliente-resumen span,
+.panel-presupuestos .cliente-resumen button {
+  color: #9a7214;
+}
+
+.panel-presupuestos .pf-item,
+.panel-presupuestos .pf-cant {
+  border-color: #e2e8f0;
+  background: #fff;
+}
+
+.panel-presupuestos .pf-item:hover {
+  border-color: #c5a059;
+  background: #fffaf0;
+}
+
+.panel-presupuestos .pf-item strong,
+.panel-presupuestos .pf-nombre {
+  color: #1e293b;
+}
+
+.panel-presupuestos .pf-item small,
+.panel-presupuestos .pf-precio {
+  color: #64748b;
+}
+
+.panel-presupuestos .cant-control button,
+.panel-presupuestos .pf-metodo-btn,
+.panel-presupuestos .btn-filtro-productos {
+  border-color: #cbd5e1;
+  background: #fff;
+  color: #475569;
+}
+
+.panel-presupuestos .pf-metodo-btn.activo,
+.panel-presupuestos .btn-filtro-productos.activo {
+  border-color: #c5a059;
+  background: #fffaf0;
+  color: #8a6610;
+}
+
+.panel-presupuestos .pf-total {
+  border-top-color: #e2e8f0;
+  color: #8a6610;
+}
+
+.panel-presupuestos .pf-total-final {
+  border-top-color: #c5a059;
+}
+
+.panel-presupuestos .btn-generar-pdf {
+  background: #b08a2e;
+  box-shadow: 0 8px 20px rgba(176, 138, 46, 0.22);
+}
+
+.panel-presupuestos .presupuestos-historial h2 {
+  color: #0f172a;
+}
+
+.panel-presupuestos .presupuesto-card {
+  border-color: #e2e8f0;
+  background: #fff;
+}
+
+.panel-presupuestos .presupuesto-card:hover {
+  border-color: #dfc477;
+  background: #fffaf0;
+}
+
+.panel-presupuestos .pc-header strong,
+.panel-presupuestos .pc-cliente {
+  color: #334155;
+}
+
+.panel-presupuestos .pc-metodo {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.panel-presupuestos .pc-total {
+  color: #8a6610 !important;
+}
+
+.panel-presupuestos .estado-presupuesto {
+  background: #fff7d6;
+  color: #8a6610;
+}
+
+.panel-presupuestos .pf-nombre {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .panel-presupuestos {
+    padding: 16px;
+  }
+
+  .panel-presupuestos .productos-controles,
+  .panel-presupuestos .productos-trabajo-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .panel-presupuestos .btn-filtro-productos {
+    width: 100%;
+  }
+}

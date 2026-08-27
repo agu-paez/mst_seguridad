@@ -325,7 +325,7 @@ function PanelPresupuestos() {
           <div className="pf-grid">
             {productosFiltrados.map(p => (
               <div key={p.id} className="pf-item" onClick={() => agregarItem(p)}>
-                <strong>{p.nombre}</strong>
+                <strong title={p.nombre}>{acortarNombre(p.nombre, 24)}</strong>
                 <small>${p.precio?.toLocaleString()}</small>
               </div>
             ))}

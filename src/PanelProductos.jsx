@@ -15,9 +15,9 @@ const API = async (path, opts = {}) => {
     const data = JSON.parse(text);
     if (!r.ok) throw new Error(data.error || 'Error del servidor');
     return data;
-  } catch (e) {
-    console.error("🚨 EL SERVIDOR DEVOLVIÓ ESTO EN LUGAR DE DATOS:", text);
-    throw new Error('Error al leer los datos de la base de datos.');
+  } catch (error) {
+    console.error("🚨 EL SERVIDOR DEVOLVIÓ ESTO EN LUGAR DE DATOS:", text, error);
+    throw new Error('Error al leer los datos de la base de datos.', { cause: error });
   }
 };
 
@@ -26,7 +26,7 @@ function PanelProductos() {
   const [mostrarForm, setMostrarForm] = useState(false);
   const [formProducto, setFormProducto] = useState({ nombre: '', precio: '', descripcion: '', imagenUrl: '', imagenFile: null });
   const [editandoId, setEditandoId] = useState(null);
-  const acortarNombre = (nombre, maximo = 34) => nombre.length > maximo ? `${nombre.slice(0, maximo).trim()}...` : nombre;
+  const acortarNombre = (nombre, maximo = 24) => nombre.length > maximo ? `${nombre.slice(0, maximo).trim()}...` : nombre;
 
   useEffect(() => {
     API('/api/productos')

@@ -2930,6 +2930,98 @@ body {
   }
 }
 
+/* Final contrast pass: slightly deeper neutrals and consistent detail states. */
+body {
+  background: #eef1f5;
+}
+
+.navbar,
+.panel-admin,
+.panel-presupuestos,
+.form-producto,
+.form-cliente,
+.form-trabajo,
+.clientes-lista,
+.cliente-detalle,
+.form-usuario,
+.usuarios-lista {
+  background: #f8fafc;
+}
+
+.producto-tarjeta,
+.panel-presupuestos .presupuesto-card,
+.panel-presupuestos .pf-item,
+.panel-presupuestos .pf-cant {
+  background: #f1f5f9;
+}
+
+.btn-agregar-cliente,
+.btn-agregar-usuario,
+.panel-clientes .btn-guardar,
+.panel-usuarios .btn-guardar,
+.panel-presupuestos .btn-generar-pdf {
+  background: #947329;
+}
+
+.pf-grid,
+.pf-seleccionados,
+.presupuestos-historial,
+.clientes-lista,
+.cliente-detalle {
+  scrollbar-color: #64748b #e2e8f0;
+}
+
+.pf-grid::-webkit-scrollbar,
+.pf-seleccionados::-webkit-scrollbar,
+.presupuestos-historial::-webkit-scrollbar,
+.clientes-lista::-webkit-scrollbar,
+.cliente-detalle::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pf-grid::-webkit-scrollbar-thumb,
+.pf-seleccionados::-webkit-scrollbar-thumb,
+.presupuestos-historial::-webkit-scrollbar-thumb,
+.clientes-lista::-webkit-scrollbar-thumb,
+.cliente-detalle::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 999px;
+}
+
+.cliente-modal {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.cliente-modal .modal-header h2,
+.cliente-modal .modal-description,
+.cliente-modal .detalle-presupuesto-meta,
+.cliente-modal .detalle-presupuesto-item,
+.cliente-modal .detalle-presupuesto-total {
+  color: #334155;
+}
+
+.cliente-modal .modal-kicker,
+.cliente-modal .detalle-presupuesto-total strong,
+.cliente-modal .detalle-presupuesto-item strong {
+  color: #947329;
+}
+
+.cliente-modal .detalle-presupuesto-heading {
+  color: #64748b;
+  border-bottom-color: #cbd5e1;
+}
+
+.cliente-modal .detalle-presupuesto-item {
+  border-bottom-color: #e2e8f0;
+}
+
+.cliente-modal .cliente-modal-grid input {
+  background: #fff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
 /* Shared premium palette across the application. */
 body {
   background: #f8f9fa;
@@ -3163,4 +3255,24 @@ body {
 
 .productos-grid .producto-tarjeta h3 {
   max-height: 2.6em;
+}
+
+/* Final overrides keep the darker premium palette visible after responsive rules. */
+body { background: #eef1f5; }
+.navbar, .panel-admin, .panel-presupuestos, .form-producto, .form-cliente, .form-trabajo, .clientes-lista, .cliente-detalle, .form-usuario, .usuarios-lista { background: #f1f5f9; }
+.producto-tarjeta, .panel-presupuestos .presupuesto-card, .panel-presupuestos .pf-item, .panel-presupuestos .pf-cant { background: #e8edf3; }
+.footer { background: #64748b; }
+.panel-presupuestos .cant-control span, .panel-presupuestos .pf-total, .panel-presupuestos .pf-subtotal { color: #795b17 !important; }
+.panel-presupuestos .pf-nombre, .panel-presupuestos .pf-item strong { color: #1e293b; }
+.panel-presupuestos .pf-item small, .panel-presupuestos .pf-precio { color: #475569; }
+.panel-presupuestos .btn-generar-pdf, .btn-agregar-cliente, .btn-agregar-usuario, .panel-clientes .btn-guardar, .panel-usuarios .btn-guardar { background: #947329; }
+.panel-presupuestos .cliente-modal { background: #e8edf3; }
+.panel-presupuestos .cliente-modal .modal-header h2, .panel-presupuestos .cliente-modal .modal-description, .panel-presupuestos .cliente-modal .detalle-presupuesto-meta, .panel-presupuestos .cliente-modal .detalle-presupuesto-item, .panel-presupuestos .cliente-modal .detalle-presupuesto-total { color: #334155; }
+.panel-presupuestos .cliente-modal .detalle-presupuesto-item strong, .panel-presupuestos .cliente-modal .detalle-presupuesto-total strong { color: #947329; }
+
+.productos-grid .producto-tarjeta h3 {
+  max-height: 2.6em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
 }

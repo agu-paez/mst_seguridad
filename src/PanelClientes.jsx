@@ -17,7 +17,7 @@ function PanelClientes() {
   const [clientes, setClientes] = useState([]);
   const [productos, setProductos] = useState([]);
   const [clienteSel, setClienteSel] = useState(null);
-  const [form, setForm] = useState({ nombre: '', telefono: '', email: '', direccion: '' });
+  const [form, setForm] = useState({ nombre: '', telefono: '', email: '', direccion: '', documento: '' });
   const [mostrarForm, setMostrarForm] = useState(false);
   const [mostrarTrabajo, setMostrarTrabajo] = useState(false);
   const [formTrabajo, setFormTrabajo] = useState({ descripcion: '', labor: '', usuarioId: '' });
@@ -42,7 +42,7 @@ function PanelClientes() {
   const crearCliente = async (e) => {
     e.preventDefault();
     await API('/api/clientes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
-    setForm({ nombre: '', telefono: '', email: '', direccion: '' });
+    setForm({ nombre: '', telefono: '', email: '', direccion: '', documento: '' });
     setMostrarForm(false);
     API('/api/clientes').then(setClientes);
   };
@@ -139,8 +139,9 @@ function PanelClientes() {
         <form className="form-cliente" onSubmit={crearCliente}>
           <input placeholder="Nombre" value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} required />
           <input placeholder="Teléfono" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
-          <input placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-          <input placeholder="Dirección" value={form.direccion} onChange={e => setForm({ ...form, direccion: e.target.value })} />
+           <input placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+           <input placeholder="DNI / CUIT" value={form.documento} onChange={e => setForm({ ...form, documento: e.target.value })} />
+           <input placeholder="Dirección" value={form.direccion} onChange={e => setForm({ ...form, direccion: e.target.value })} />
           <div className="form-acciones">
             <button type="submit" className="btn-guardar">Guardar</button>
             <button type="button" className="btn-cancelar" onClick={() => setMostrarForm(false)}>Cancelar</button>
@@ -167,7 +168,18 @@ function PanelClientes() {
             <p><strong>Teléfono:</strong> {clienteSel.telefono || '-'}</p>
             <p><strong>Email:</strong> {clienteSel.email || '-'}</p>
             <p><strong>Dirección:</strong> {clienteSel.direccion || '-'}</p>
+            <p><strong>DNI / CUIT:</strong> {clienteSel.documento || '-'}</p>
             <p><strong>Desde:</strong> {clienteSel.fechaCreacion}</p>
+
+            <h3 className="historial-cliente-titulo">Historial de Presupuestos</h3>
+            {(!clienteSel.Presupuestos || clienteSel.Presupuestos.length === 0) && <p className="historial-vacio">Sin presupuestos registrados.</p>}
+            {clienteSel.Presupuestos?.map(p => (
+              <div key={p.id} className="cliente-presupuesto-card">
+                <strong>{p.fecha}</strong>
+                <span>${parsePrecio(p.total).toLocaleString()}</span>
+                <small className={`estado-presupuesto ${p.estado || 'pendiente'}`}>{p.estado || 'Pendiente'}</small>
+              </div>
+            ))}
 
             <h3 style={{ marginTop: 24 }}>Historial de Trabajos</h3>
             <button className="btn-agregar-cliente" onClick={() => setMostrarTrabajo(true)} style={{ marginBottom: 12 }}>+ Agregar Trabajo</button>

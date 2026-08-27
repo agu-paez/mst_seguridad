@@ -87,6 +87,7 @@ const Cliente = sequelize.define('Cliente', {
     telefono: { type: DataTypes.STRING, allowNull: true },
     email: { type: DataTypes.STRING, allowNull: true },
     direccion: { type: DataTypes.STRING, allowNull: true },
+    documento: { type: DataTypes.STRING, allowNull: true },
     fechaCreacion: { type: DataTypes.STRING, defaultValue: () => new Date().toLocaleDateString() }
 });
 
@@ -102,15 +103,20 @@ const Trabajo = sequelize.define('Trabajo', {
 
 const Presupuesto = sequelize.define('Presupuesto', {
     cliente: { type: DataTypes.STRING, allowNull: true },
+    // Nullable for existing budgets; new budgets are validated by the API.
+    clienteId: { type: DataTypes.INTEGER, allowNull: true },
     fecha: { type: DataTypes.STRING, defaultValue: () => new Date().toLocaleDateString() },
     items: { type: DataTypes.TEXT, allowNull: false },
     total: { type: DataTypes.FLOAT, allowNull: false },
     metodoPago: { type: DataTypes.STRING, allowNull: true, defaultValue: 'efectivo' },
-    subtotal: { type: DataTypes.FLOAT, allowNull: true }
+    subtotal: { type: DataTypes.FLOAT, allowNull: true },
+    estado: { type: DataTypes.STRING, allowNull: true, defaultValue: 'pendiente' }
 });
 
 // Relaciones
 Cliente.hasMany(Trabajo);
 Trabajo.belongsTo(Cliente);
+Cliente.hasMany(Presupuesto, { foreignKey: 'clienteId' });
+Presupuesto.belongsTo(Cliente, { foreignKey: 'clienteId' });
 
 export { sequelize, Producto, Factura, DetalleFactura, Usuario, Cliente, Trabajo, Presupuesto };

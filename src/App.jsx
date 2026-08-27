@@ -26,7 +26,7 @@ function App() {
       <nav className="navbar">
         <NavLink to="/" className={({ isActive }) => `nombre${isActive ? ' activo' : ''}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
           <img src="/logoJB.jpeg" alt="JB_seguridad" className="logo" />
-          <span>JB_seguridad</span>
+          <span>JB Seguridad</span>
         </NavLink>
         
         <div className="nav-enlaces">
@@ -71,7 +71,7 @@ function App() {
           <div className="footer-content">
             <div className="footer-brand">
               <img src="/logoJB.jpeg" alt="JB_seguridad" className="footer-logo" />
-              <strong>JB_seguridad</strong>
+              <strong>JB Seguridad</strong>
             </div>
             <div className="footer-links">
               <a href="#">Términos y Condiciones</a>
@@ -79,7 +79,7 @@ function App() {
               <a href="#">Aviso Legal</a>
             </div>
             <div className="footer-copy">
-              &copy; {new Date().getFullYear()} JB_seguridad. Todos los derechos reservados.
+              &copy; {new Date().getFullYear()} JB Seguridad. Todos los derechos reservados.
             </div>
           </div>
         </footer>

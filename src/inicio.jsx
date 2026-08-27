@@ -1,12 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 
 function Inicio() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    setVisible(true);
-  }, []);
-
   return (
     <div className="inicio-container">
       <div className="inicio-hero">
@@ -16,16 +10,19 @@ function Inicio() {
           <div className="shape shape-3" />
         </div>
         
-        {/* ACÁ ACTUALIZAMOS LOS TEXTOS PRINCIPALES */}
-        <div className={`hero-content ${visible ? 'visible' : ''}`}>
+        <div className="hero-content visible">
           <div className="hero-badge">Seguridad & Energía</div>
           <h1 className="hero-title">
-            <span className="hero-title-main">JB_seguridad</span>
+            <span className="hero-title-main">JB Seguridad</span>
             <span className="hero-title-sub">& Paneles Solares</span>
           </h1>
           <p className="hero-desc">
             Los mejores sistemas de prevención y monitoreo para tu seguridad, sumado a soluciones de energía solar para tu hogar o comercio.
           </p>
+          <NavLink className="btn-hero" to="/login">
+            <span>Solicitar presupuesto</span>
+            <span className="btn-arrow" aria-hidden="true">→</span>
+          </NavLink>
         </div>
 
         <div className="hero-stats">
@@ -49,7 +46,6 @@ function Inicio() {
       <div className="caracteristicas-section">
         <div className="section-header">
           <span className="section-tag">¿Por qué elegirnos?</span>
-          {/* CAMBIAMOS EL TÍTULO PARA INCLUIR LA ENERGÍA */}
           <h2 className="section-title">Tecnología que <span className="gradient-text">protege y alimenta</span> lo que importa</h2>
         </div>
 
@@ -70,7 +66,6 @@ function Inicio() {
           {/* TARJETA 2: PANELES SOLARES (NUEVA) */}
           <div className="caracteristica-tarjeta">
             <div className="card-icon">
-              {/* Este SVG dibuja un panel solar */}
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                 <line x1="8" y1="3" x2="8" y2="21" />

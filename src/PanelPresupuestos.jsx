@@ -18,15 +18,54 @@ const API = async (path, opts = {}) => {
 
 function PanelPresupuestos() {
   const [productos, setProductos] = useState([]);
+  const [clientes, setClientes] = useState([]);
   const [presupuestos, setPresupuestos] = useState([]);
   const [items, setItems] = useState([]);
-  const [cliente, setCliente] = useState('');
+  const [clienteId, setClienteId] = useState('');
+  const [clienteQuery, setClienteQuery] = useState('');
+  const [clientesAbierto, setClientesAbierto] = useState(false);
+  const [mostrarNuevoCliente, setMostrarNuevoCliente] = useState(false);
+  const [guardandoCliente, setGuardandoCliente] = useState(false);
+  const [nuevoCliente, setNuevoCliente] = useState({ nombre: '', telefono: '', email: '', direccion: '', documento: '' });
   const [metodoPago, setMetodoPago] = useState('efectivo');
 
   useEffect(() => {
     API('/api/productos').then(setProductos);
+    API('/api/clientes').then(setClientes);
     API('/api/presupuestos').then(setPresupuestos);
   }, []);
+
+  const clienteSeleccionado = clientes.find(c => String(c.id) === String(clienteId));
+  const clientesFiltrados = clientes.filter(c => {
+    const texto = `${c.nombre} ${c.telefono || ''} ${c.email || ''} ${c.direccion || ''} ${c.documento || ''}`.toLowerCase();
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(clienteQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+  });
+
+  const seleccionarCliente = (clienteSeleccionadoNuevo) => {
+    setClienteId(clienteSeleccionadoNuevo.id);
+    setClienteQuery(clienteSeleccionadoNuevo.nombre);
+    setClientesAbierto(false);
+  };
+
+  const crearClienteRapido = async (e) => {
+    e.preventDefault();
+    setGuardandoCliente(true);
+    try {
+      const creado = await API('/api/clientes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nuevoCliente)
+      });
+      setClientes(prev => [creado, ...prev]);
+      seleccionarCliente(creado);
+      setNuevoCliente({ nombre: '', telefono: '', email: '', direccion: '', documento: '' });
+      setMostrarNuevoCliente(false);
+    } catch (err) {
+      alert('Error al crear cliente: ' + err.message);
+    } finally {
+      setGuardandoCliente(false);
+    }
+  };
 
   const agregarItem = (p) => {
     setItems(prev => {
@@ -73,7 +112,7 @@ function PanelPresupuestos() {
 
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text('JB_seguridad', 58, 22);
+    doc.text('JB Seguridad', 58, 22);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text('Soluciones integrales en seguridad electrónica', 58, 28);
@@ -141,7 +180,7 @@ function PanelPresupuestos() {
 
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.text('JB_seguridad - Seguridad Inteligente', 14, finalY + 8);
+    doc.text('JB Seguridad - Seguridad Inteligente', 14, finalY + 8);
     doc.text('Gracias por confiar en nosotros.', 14, finalY + 14);
     doc.text('Válido por 15 días.', 14, finalY + 20);
 
@@ -153,12 +192,16 @@ function PanelPresupuestos() {
       alert('Agrega al menos un producto');
       return;
     }
+    if (!clienteSeleccionado) {
+      alert('Seleccioná un cliente antes de guardar el presupuesto');
+      return;
+    }
     try {
       const nuevo = await API('/api/presupuestos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          cliente: cliente || null,
+          clienteId: clienteSeleccionado.id,
           items,
           total: subtotal,
           metodoPago,
@@ -166,9 +209,10 @@ function PanelPresupuestos() {
         })
       });
       setPresupuestos([nuevo, ...presupuestos]);
-      await generarPDF(items, cliente, subtotal, subtotal, metodoPago, nuevo.fecha);
+      await generarPDF(items, clienteSeleccionado.nombre, subtotal, subtotal, metodoPago, nuevo.fecha);
       setItems([]);
-      setCliente('');
+      setClienteId('');
+      setClienteQuery('');
       setMetodoPago('efectivo');
     } catch (err) {
       alert('Error al guardar presupuesto: ' + err.message);
@@ -187,7 +231,7 @@ function PanelPresupuestos() {
 
   const descargarPDF = async (p) => {
     const itemsData = JSON.parse(p.items);
-    const clienteNombre = p.cliente || '';
+    const clienteNombre = p.Cliente?.nombre || p.cliente || '';
     const pSubtotal = p.subtotal || itemsData.reduce((s, i) => s + i.precio * i.cantidad, 0);
     await generarPDF(itemsData, clienteNombre, pSubtotal, pSubtotal, p.metodoPago || 'efectivo', p.fecha);
   };
@@ -200,10 +244,40 @@ function PanelPresupuestos() {
 
       <div className="presupuesto-form">
         <div className="pf-left">
-          <label>Cliente (opcional)</label>
-          <div className="pf-row">
-            <input value={cliente} onChange={e => setCliente(e.target.value)} placeholder="Nombre del cliente" />
+          <label>Cliente</label>
+          <div className="cliente-buscador">
+            <input
+              value={clienteQuery}
+              onFocus={() => setClientesAbierto(true)}
+              onChange={e => { setClienteQuery(e.target.value); setClienteId(''); setClientesAbierto(true); }}
+              placeholder="Buscar por nombre, DNI/CUIT, teléfono o email"
+              autoComplete="off"
+            />
+            {clientesAbierto && (
+              <div className="clientes-resultados">
+                {clientesFiltrados.map(c => (
+                  <button type="button" className="cliente-resultado" key={c.id} onClick={() => seleccionarCliente(c)}>
+                    <strong>{c.nombre}</strong>
+                    <small>{c.documento || c.telefono || c.email || 'Sin datos adicionales'}</small>
+                  </button>
+                ))}
+                {clientesFiltrados.length === 0 && (
+                  <button type="button" className="crear-cliente-opcion" onClick={() => { setMostrarNuevoCliente(true); setClientesAbierto(false); }}>
+                    + Crear nuevo cliente
+                  </button>
+                )}
+              </div>
+            )}
           </div>
+          {clienteSeleccionado && (
+            <div className="cliente-resumen">
+              <div>
+                <strong>{clienteSeleccionado.nombre}</strong>
+                <span>{clienteSeleccionado.telefono || 'Sin teléfono'}{clienteSeleccionado.documento ? ` · ${clienteSeleccionado.documento}` : ''}</span>
+              </div>
+              <button type="button" onClick={() => { setClienteId(''); setClienteQuery(''); }}>Cambiar</button>
+            </div>
+          )}
 
           <label>Productos disponibles</label>
           <div className="pf-grid">
@@ -273,8 +347,9 @@ function PanelPresupuestos() {
             <div key={p.id} className="presupuesto-card" onClick={() => descargarPDF(p)}>
               <div className="pc-header">
                 <strong>{p.fecha}</strong>
-                <span className={p.cliente ? 'pc-cliente' : 'pc-cliente sin-cliente'}>{p.cliente || 'Sin cliente'}</span>
+                <span className={p.Cliente?.nombre || p.cliente ? 'pc-cliente' : 'pc-cliente sin-cliente'}>{p.Cliente?.nombre || p.cliente || 'Sin cliente'}</span>
                 <span className="pc-metodo">{p.metodoPago === 'credito' ? 'Crédito' : p.metodoPago === 'cheques' ? 'Cheques' : 'Efectivo'}</span>
+                <span className={`estado-presupuesto ${p.estado || 'pendiente'}`}>{p.estado || 'Pendiente'}</span>
                 <span className="pc-total">${parseFloat(p.total).toLocaleString()}</span>
               </div>
               <div className="pc-acciones">
@@ -283,6 +358,32 @@ function PanelPresupuestos() {
             </div>
           ))}
         </div>
+      )}
+
+      {mostrarNuevoCliente && (
+        <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setMostrarNuevoCliente(false); }}>
+          <form className="cliente-modal" onSubmit={crearClienteRapido}>
+            <div className="modal-header">
+              <div>
+                <span className="modal-kicker">Alta rápida</span>
+                <h2>Nuevo cliente</h2>
+              </div>
+              <button type="button" className="modal-close" onClick={() => setMostrarNuevoCliente(false)} aria-label="Cerrar">×</button>
+            </div>
+            <p className="modal-description">El presupuesto que estás armando se conservará.</p>
+            <div className="cliente-modal-grid">
+              <input placeholder="Nombre completo *" value={nuevoCliente.nombre} onChange={e => setNuevoCliente({ ...nuevoCliente, nombre: e.target.value })} required autoFocus />
+              <input placeholder="DNI / CUIT" value={nuevoCliente.documento} onChange={e => setNuevoCliente({ ...nuevoCliente, documento: e.target.value })} />
+              <input placeholder="Teléfono" value={nuevoCliente.telefono} onChange={e => setNuevoCliente({ ...nuevoCliente, telefono: e.target.value })} />
+              <input type="email" placeholder="Email" value={nuevoCliente.email} onChange={e => setNuevoCliente({ ...nuevoCliente, email: e.target.value })} />
+              <input className="cliente-modal-full" placeholder="Dirección" value={nuevoCliente.direccion} onChange={e => setNuevoCliente({ ...nuevoCliente, direccion: e.target.value })} />
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn-cancelar" onClick={() => setMostrarNuevoCliente(false)}>Cancelar</button>
+              <button type="submit" className="btn-guardar" disabled={guardandoCliente}>{guardandoCliente ? 'Guardando...' : 'Guardar y seleccionar'}</button>
+            </div>
+          </form>
+      </div>
       )}
     </div>
   );

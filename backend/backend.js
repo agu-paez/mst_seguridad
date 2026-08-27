@@ -305,9 +305,9 @@ app.get('/api/clientes', verificarToken, async (req, res) => {
 
 app.post('/api/clientes', verificarToken, async (req, res) => {
     try {
-        const { nombre, telefono, email, direccion } = req.body;
+        const { nombre, telefono, email, direccion, documento } = req.body;
         if (!nombre) return res.status(400).json({ error: "Nombre requerido" });
-        const cliente = await Cliente.create({ nombre, telefono, email, direccion });
+        const cliente = await Cliente.create({ nombre, telefono, email, direccion, documento });
         res.status(201).json(cliente);
     } catch (error) {
         res.status(500).json({ error: "Error interno del servidor" });
@@ -317,7 +317,7 @@ app.post('/api/clientes', verificarToken, async (req, res) => {
 app.get('/api/clientes/:id', verificarToken, async (req, res) => {
     try {
         const cliente = await Cliente.findByPk(req.params.id, {
-            include: [{ model: Trabajo }]
+            include: [{ model: Trabajo }, { model: Presupuesto }]
         });
         if (!cliente) return res.status(404).json({ error: "Cliente no encontrado" });
         if (cliente.Trabajos) cliente.Trabajos.sort((a, b) => b.id - a.id);
@@ -432,7 +432,10 @@ app.delete('/api/trabajos/:id', verificarToken, async (req, res) => {
 // CRUD Presupuestos
 app.get('/api/presupuestos', verificarToken, async (req, res) => {
     try {
-        const presupuestos = await Presupuesto.findAll({ order: [['id', 'DESC']] });
+        const presupuestos = await Presupuesto.findAll({
+            include: [{ model: Cliente, attributes: ['id', 'nombre', 'telefono', 'email', 'direccion', 'documento'] }],
+            order: [['id', 'DESC']]
+        });
         res.json(presupuestos);
     } catch (error) {
         res.status(500).json({ error: "Error interno del servidor" });
@@ -441,12 +444,15 @@ app.get('/api/presupuestos', verificarToken, async (req, res) => {
 
 app.post('/api/presupuestos', verificarToken, async (req, res) => {
     try {
-        const { cliente, items, total, metodoPago, subtotal } = req.body;
-        if (!items || total === undefined) {
-            return res.status(400).json({ error: "items y total requeridos" });
+        const { clienteId, items, total, metodoPago, subtotal } = req.body;
+        if (!clienteId || !items || total === undefined) {
+            return res.status(400).json({ error: "clienteId, items y total requeridos" });
         }
+        const clienteSeleccionado = await Cliente.findByPk(clienteId);
+        if (!clienteSeleccionado) return res.status(404).json({ error: "Cliente no encontrado" });
         const presupuesto = await Presupuesto.create({
-            cliente: cliente || null,
+            cliente: clienteSeleccionado.nombre,
+            clienteId: parseInt(clienteSeleccionado.id),
             items: JSON.stringify(items),
             total: parseFloat(total),
             metodoPago: metodoPago || 'efectivo',

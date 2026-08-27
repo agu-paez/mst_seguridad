@@ -21,6 +21,7 @@ function PanelPresupuestos() {
   const [presupuestos, setPresupuestos] = useState([]);
   const [items, setItems] = useState([]);
   const [productoQuery, setProductoQuery] = useState('');
+  const [ocultarNoSeleccionados, setOcultarNoSeleccionados] = useState(false);
   const [presupuestoEditando, setPresupuestoEditando] = useState(null);
   const [clienteId, setClienteId] = useState('');
   const [clienteQuery, setClienteQuery] = useState('');
@@ -41,7 +42,11 @@ function PanelPresupuestos() {
     const texto = `${c.nombre} ${c.telefono || ''} ${c.email || ''} ${c.direccion || ''} ${c.documento || ''}`.toLowerCase();
     return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(clienteQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
   });
-  const productosFiltrados = productos.filter(p => `${p.nombre} ${p.descripcion || ''}`.toLowerCase().includes(productoQuery.toLowerCase()));
+  const productosFiltrados = productos.filter(p => {
+    const coincideBusqueda = `${p.nombre} ${p.descripcion || ''}`.toLowerCase().includes(productoQuery.toLowerCase());
+    const seleccionado = items.some(item => item.id === p.id);
+    return coincideBusqueda && (!ocultarNoSeleccionados || seleccionado);
+  });
 
   const seleccionarCliente = (clienteSeleccionadoNuevo) => {
     setClienteId(clienteSeleccionadoNuevo.id);
@@ -263,7 +268,7 @@ function PanelPresupuestos() {
   };
 
   return (
-    <div className="panel-presupuestos presupuestos-scroll">
+    <div className="panel-presupuestos">
       <div className="presupuestos-header">
           <div>
             <span className="section-kicker">Gestión comercial</span>
@@ -310,7 +315,12 @@ function PanelPresupuestos() {
           )}
 
           <label>Productos disponibles</label>
-          <input className="productos-filtro" value={productoQuery} onChange={e => setProductoQuery(e.target.value)} placeholder="Buscar producto..." />
+          <div className="productos-controles">
+            <input className="productos-filtro" value={productoQuery} onChange={e => setProductoQuery(e.target.value)} placeholder="Buscar producto..." />
+            <button type="button" className={`btn-filtro-productos${ocultarNoSeleccionados ? ' activo' : ''}`} onClick={() => setOcultarNoSeleccionados(!ocultarNoSeleccionados)}>
+              {ocultarNoSeleccionados ? 'Mostrar todos' : 'Ocultar no seleccionados'}
+            </button>
+          </div>
           <div className="pf-grid">
             {productosFiltrados.map(p => (
               <div key={p.id} className="pf-item" onClick={() => agregarItem(p)}>

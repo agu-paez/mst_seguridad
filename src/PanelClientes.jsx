@@ -19,6 +19,9 @@ function PanelClientes() {
   const [mostrarForm, setMostrarForm] = useState(false);
   const [mostrarTrabajo, setMostrarTrabajo] = useState(false);
   const [formTrabajo, setFormTrabajo] = useState({ descripcion: '', labor: '', usuarioId: '', presupuestoId: '', estadoPresupuesto: 'pendiente' });
+  const [trabajoEditando, setTrabajoEditando] = useState(null);
+  const [trabajoDetalle, setTrabajoDetalle] = useState(null);
+  const [ocultarProductosNoSeleccionados, setOcultarProductosNoSeleccionados] = useState(false);
   const [prodsSel, setProdsSel] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [busquedaCliente, setBusquedaCliente] = useState('');
@@ -72,6 +75,7 @@ function PanelClientes() {
     return s + parsePrecio(p.precio) * Math.max(parseCantidad(p.cantidad), 1);
   }, 0);
   const montoFinal = totProds + labor;
+  const productosTrabajoVisibles = productos.filter(p => !ocultarProductosNoSeleccionados || prodsSel.some(item => item.id === Number(p.id)));
 
   const agregarProd = (p) => {
     const nid = Number(p.id);
@@ -102,7 +106,7 @@ function PanelClientes() {
     }
     try {
       const token = localStorage.getItem('token');
-      const r = await fetch(getApiUrl('/api/trabajos'), { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const r = await fetch(getApiUrl(trabajoEditando ? `/api/trabajos/${trabajoEditando.id}` : '/api/trabajos'), { method: trabajoEditando ? 'PUT' : 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
       if (!r.ok) { const e = await r.json(); alert('Error: ' + (e.error || 'desconocido')); return; }
       if (formTrabajo.presupuestoId) {
         await API(`/api/presupuestos/${formTrabajo.presupuestoId}/estado`, {
@@ -114,6 +118,7 @@ function PanelClientes() {
       setFormTrabajo({ descripcion: '', labor: '', usuarioId: '', presupuestoId: '', estadoPresupuesto: 'pendiente' });
       setProdsSel([]);
       setMostrarTrabajo(false);
+      setTrabajoEditando(null);
       await cargarCliente(clienteSel.id);
     } catch (err) {
       alert('Error al crear trabajo: ' + err.message);
@@ -133,6 +138,23 @@ function PanelClientes() {
   const parseProds = (t) => {
     if (!t.productos) return null;
     try { return JSON.parse(t.productos); } catch { return null; }
+  };
+
+  const editarTrabajo = (trabajo) => {
+    const productosTrabajo = parseProds(trabajo) || [];
+    const totalProductos = productosTrabajo.reduce((total, producto) => total + parsePrecio(producto.precio) * Math.max(parseCantidad(producto.cantidad), 1), 0);
+    setTrabajoEditando(trabajo);
+    setProdsSel(productosTrabajo);
+    setFormTrabajo({ descripcion: trabajo.descripcion || '', labor: Math.max(0, parsePrecio(trabajo.monto) - totalProductos).toString(), usuarioId: trabajo.usuarioId || '', presupuestoId: '', estadoPresupuesto: 'pendiente' });
+    setMostrarTrabajo(true);
+    setOcultarProductosNoSeleccionados(false);
+  };
+
+  const cancelarEdicionTrabajo = () => {
+    setTrabajoEditando(null);
+    setMostrarTrabajo(false);
+    setProdsSel([]);
+    setFormTrabajo({ descripcion: '', labor: '', usuarioId: '', presupuestoId: '', estadoPresupuesto: 'pendiente' });
   };
 
   const clientesFiltrados = clientes.filter(c => {
@@ -197,16 +219,21 @@ function PanelClientes() {
             ))}
 
             <h3 style={{ marginTop: 24 }}>Historial de Trabajos</h3>
-            <button className="btn-agregar-cliente" onClick={() => setMostrarTrabajo(true)} style={{ marginBottom: 12 }}>+ Agregar Trabajo</button>
+             <button className="btn-agregar-cliente" onClick={() => { cancelarEdicionTrabajo(); setMostrarTrabajo(true); }} style={{ marginBottom: 12 }}>+ Agregar Trabajo</button>
 
             {mostrarTrabajo && (
               <form className="form-trabajo" onSubmit={crearTrabajo}>
                 <textarea placeholder="Descripción del trabajo realizado" value={formTrabajo.descripcion} onChange={e => setFormTrabajo({ ...formTrabajo, descripcion: e.target.value })} required />
 
                 <div className="prod-selector">
-                  <label>Productos de la tienda usados:</label>
+                  <div className="productos-trabajo-header">
+                    <label>Productos de la tienda usados:</label>
+                    <button type="button" className={`btn-filtro-productos${ocultarProductosNoSeleccionados ? ' activo' : ''}`} onClick={() => setOcultarProductosNoSeleccionados(!ocultarProductosNoSeleccionados)}>
+                      {ocultarProductosNoSeleccionados ? 'Mostrar todos' : 'Ocultar no seleccionados'}
+                    </button>
+                  </div>
                   <div className="prod-grid">
-                    {productos.map(p => (
+                    {productosTrabajoVisibles.map(p => (
                       <div key={p.id} className="prod-item" onClick={() => agregarProd(p)}>
                         <span>{p.nombre}</span>
                         <small>${p.precio?.toLocaleString()}</small>
@@ -289,34 +316,16 @@ function PanelClientes() {
 
             {(!clienteSel.Trabajos || clienteSel.Trabajos.length === 0) && <p style={{ color: 'rgba(255,255,255,0.4)' }}>Sin trabajos registrados.</p>}
             {clienteSel.Trabajos?.map(t => {
-              const prods = parseProds(t);
-              const subtotalProds = prods
-                ? prods.reduce((s, p) => s + parsePrecio(p.precio) * Math.max(parseCantidad(p.cantidad), 1), 0)
-                : 0;
-              const manoDeObraReal = parsePrecio(t.monto) - subtotalProds;
               return (
                 <div key={t.id} className="trabajo-card">
                   <div className="trabajo-header">
                     <strong>{t.fecha}</strong>
                     <span className="trabajo-monto">${parsePrecio(t.monto).toLocaleString()}</span>
+                    <button className="btn-detalle-trabajo" onClick={() => setTrabajoDetalle(t)}>Detalle</button>
+                    <button className="btn-editar-trabajo" onClick={() => editarTrabajo(t)}>Editar</button>
                     <button className="btn-eliminar" style={{ padding: '4px 10px', fontSize: 12 }} onClick={() => eliminarTrabajo(t.id)}>✕</button>
                   </div>
                   <p>{t.descripcion}</p>
-
-                  {prods && prods.length > 0 && (
-                    <div className="trabajo-productos">
-                      <strong>Productos usados:</strong>
-                      {prods.map((p, i) => (
-                        <div key={i} className="tp-item">
-                          <span>{p.nombre} × {parseCantidad(p.cantidad) || 1}</span>
-                          <span>${(parsePrecio(p.precio) * Math.max(parseCantidad(p.cantidad), 1)).toLocaleString()}</span>
-                        </div>
-                      ))}
-                      <div className="tp-total">
-                        <span>Mano de obra: ${manoDeObraReal.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  )}
 
                   {t.imagenes && JSON.parse(t.imagenes).map((img, i) => (
                     <img key={i} src={img} alt={`trabajo-${i}`} className="trabajo-img" />
@@ -361,6 +370,38 @@ function PanelClientes() {
             <div className="detalle-presupuesto-total">
               <span>Total</span>
               <strong>${parsePrecio(presupuestoDetalle.total).toLocaleString()}</strong>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {trabajoDetalle && (
+        <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setTrabajoDetalle(null); }}>
+          <div className="cliente-modal presupuesto-detalle-modal">
+            <div className="modal-header">
+              <div>
+                <span className="modal-kicker">Trabajo #{trabajoDetalle.id}</span>
+                <h2>Detalle del trabajo</h2>
+              </div>
+              <button type="button" className="modal-close" onClick={() => setTrabajoDetalle(null)} aria-label="Cerrar">×</button>
+            </div>
+            <div className="detalle-presupuesto-meta">
+              <span><strong>Fecha:</strong> {trabajoDetalle.fecha}</span>
+              <span><strong>Total:</strong> ${parsePrecio(trabajoDetalle.monto).toLocaleString()}</span>
+            </div>
+            <p className="detalle-trabajo-descripcion">{trabajoDetalle.descripcion}</p>
+            <div className="detalle-presupuesto-items">
+              <div className="detalle-presupuesto-heading"><span>Producto</span><span>Cant.</span><span>Subtotal</span></div>
+              {(() => {
+                const itemsTrabajo = parseProds(trabajoDetalle) || [];
+                return itemsTrabajo.length > 0 ? itemsTrabajo.map((item, index) => (
+                  <div className="detalle-presupuesto-item" key={`${item.id || item.nombre}-${index}`}>
+                    <span>{item.nombre}</span>
+                    <span>{item.cantidad || 1}</span>
+                    <strong>${(parsePrecio(item.precio) * Math.max(parseCantidad(item.cantidad), 1)).toLocaleString()}</strong>
+                  </div>
+                )) : <p className="historial-vacio">Sin productos asociados.</p>;
+              })()}
             </div>
           </div>
         </div>

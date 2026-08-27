@@ -436,6 +436,31 @@ app.post('/api/trabajos', verificarToken, upload.array('imagenes', 5), async (re
     }
 });
 
+app.put('/api/trabajos/:id', verificarToken, upload.array('imagenes', 5), async (req, res) => {
+    try {
+        const trabajo = await Trabajo.findByPk(req.params.id);
+        if (!trabajo) return res.status(404).json({ error: 'Trabajo no encontrado' });
+        const { clienteId, descripcion, monto, equipos } = req.body;
+        if (!clienteId || !descripcion || monto === undefined) {
+            return res.status(400).json({ error: 'clienteId, descripcion y monto requeridos' });
+        }
+        const cambios = {
+            ClienteId: parseInt(clienteId),
+            descripcion,
+            monto: parseFloat(monto),
+            equipos: equipos || null,
+            productos: req.body.productos ? JSON.stringify(JSON.parse(req.body.productos)) : null
+        };
+        if (req.files?.length) {
+            cambios.imagenes = JSON.stringify(req.files.map(f => `/uploads/${f.filename}`));
+        }
+        await trabajo.update(cambios);
+        res.json(trabajo);
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
 app.delete('/api/trabajos/:id', verificarToken, async (req, res) => {
     try {
         const trabajo = await Trabajo.findByPk(req.params.id);

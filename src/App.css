@@ -3100,6 +3100,16 @@ body {
   color: #0f172a;
 }
 
+.form-producto input::placeholder,
+.form-producto textarea::placeholder,
+.form-cliente input::placeholder,
+.form-trabajo input::placeholder,
+.form-trabajo textarea::placeholder,
+.form-usuario input::placeholder,
+.labor-field input::placeholder {
+  color: #94a3b8;
+}
+
 .producto-tarjeta {
   min-width: 0;
   background: #fff;
